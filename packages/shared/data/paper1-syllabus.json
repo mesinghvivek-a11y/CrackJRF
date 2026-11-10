@@ -1,0 +1,614 @@
+{
+  "subject": {
+    "code": "00",
+    "name": "General Paper on Teaching & Research Aptitude",
+    "paper": "Paper I",
+    "source": "Paper-I_English.pdf"
+  },
+  "version": "official-syllabus-expanded-v1",
+  "classification_note": "The ten official modules and core syllabus concepts are retained. Additional subtopics are navigation aids and should not be interpreted as changes to the official syllabus.",
+  "units": [
+    {
+      "id": "P1-U01",
+      "title": "Teaching Aptitude",
+      "sections": [
+        {
+          "id": "P1-U01-S01",
+          "title": "Teaching and learners",
+          "topics": [
+            {
+              "id": "P1-U01-T01",
+              "title": "Teaching: Concept, Objectives and Levels",
+              "subtopics": [
+                "Memory level",
+                "Understanding level",
+                "Reflective level",
+                "Characteristics and basic requirements"
+              ]
+            },
+            {
+              "id": "P1-U01-T02",
+              "title": "Learner Characteristics",
+              "subtopics": [
+                "Adolescent learners",
+                "Adult learners",
+                "Academic, social, emotional and cognitive characteristics",
+                "Individual differences"
+              ]
+            },
+            {
+              "id": "P1-U01-T03",
+              "title": "Factors Affecting Teaching",
+              "subtopics": [
+                "Teacher",
+                "Learner",
+                "Support material",
+                "Instructional facilities",
+                "Learning environment",
+                "Institution"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P1-U01-S02",
+          "title": "Methods, support and evaluation",
+          "topics": [
+            {
+              "id": "P1-U01-T04",
+              "title": "Methods of Teaching in Higher Learning",
+              "subtopics": [
+                "Teacher-centred and learner-centred methods",
+                "Offline and online methods",
+                "SWAYAM",
+                "SWAYAMPRABHA",
+                "MOOCs"
+              ]
+            },
+            {
+              "id": "P1-U01-T05",
+              "title": "Teaching Support System",
+              "subtopics": [
+                "Traditional",
+                "Modern",
+                "ICT-based"
+              ]
+            },
+            {
+              "id": "P1-U01-T06",
+              "title": "Evaluation Systems",
+              "subtopics": [
+                "Elements and types",
+                "CBCS evaluation",
+                "Computer-based testing",
+                "Innovations"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1-U02",
+      "title": "Research Aptitude",
+      "sections": [
+        {
+          "id": "P1-U02-S01",
+          "title": "Research foundations and methods",
+          "topics": [
+            {
+              "id": "P1-U02-T01",
+              "title": "Research: Meaning, Types and Characteristics",
+              "subtopics": [
+                "Meaning",
+                "Types",
+                "Characteristics",
+                "Positivism and post-positivism"
+              ]
+            },
+            {
+              "id": "P1-U02-T02",
+              "title": "Methods of Research",
+              "subtopics": [
+                "Experimental",
+                "Descriptive",
+                "Historical",
+                "Qualitative",
+                "Quantitative"
+              ]
+            },
+            {
+              "id": "P1-U02-T03",
+              "title": "Steps of Research",
+              "subtopics": [
+                "Research process and sequence"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P1-U02-S02",
+          "title": "Research communication and ethics",
+          "topics": [
+            {
+              "id": "P1-U02-T04",
+              "title": "Thesis and Article Writing",
+              "subtopics": [
+                "Format",
+                "Referencing styles"
+              ]
+            },
+            {
+              "id": "P1-U02-T05",
+              "title": "Application of ICT in Research",
+              "subtopics": [
+                "ICT tools and applications"
+              ]
+            },
+            {
+              "id": "P1-U02-T06",
+              "title": "Research Ethics",
+              "subtopics": [
+                "Ethical principles and misconduct"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1-U03",
+      "title": "Comprehension",
+      "sections": [
+        {
+          "id": "P1-U03-S01",
+          "title": "Passage-based comprehension",
+          "topics": [
+            {
+              "id": "P1-U03-T01",
+              "title": "Reading Comprehension",
+              "subtopics": [
+                "Passage interpretation",
+                "Inference",
+                "Main idea and supporting details",
+                "Vocabulary in context"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1-U04",
+      "title": "Communication",
+      "sections": [
+        {
+          "id": "P1-U04-S01",
+          "title": "Communication concepts and forms",
+          "topics": [
+            {
+              "id": "P1-U04-T01",
+              "title": "Communication: Meaning, Types and Characteristics",
+              "subtopics": [
+                "Meaning",
+                "Types",
+                "Characteristics"
+              ]
+            },
+            {
+              "id": "P1-U04-T02",
+              "title": "Effective Communication",
+              "subtopics": [
+                "Verbal",
+                "Non-verbal",
+                "Inter-cultural",
+                "Group",
+                "Classroom communication"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P1-U04-S02",
+          "title": "Communication barriers and society",
+          "topics": [
+            {
+              "id": "P1-U04-T03",
+              "title": "Barriers to Effective Communication",
+              "subtopics": [
+                "Communication barriers"
+              ]
+            },
+            {
+              "id": "P1-U04-T04",
+              "title": "Mass-Media and Society",
+              "subtopics": [
+                "Mass media and social interaction"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1-U05",
+      "title": "Mathematical Reasoning and Aptitude",
+      "sections": [
+        {
+          "id": "P1-U05-S01",
+          "title": "Reasoning and quantitative aptitude",
+          "topics": [
+            {
+              "id": "P1-U05-T01",
+              "title": "Types of Reasoning",
+              "subtopics": [
+                "Reasoning types"
+              ]
+            },
+            {
+              "id": "P1-U05-T02",
+              "title": "Series, Codes and Relationships",
+              "subtopics": [
+                "Number series",
+                "Letter series",
+                "Codes",
+                "Relationships"
+              ]
+            },
+            {
+              "id": "P1-U05-T03",
+              "title": "Mathematical Aptitude",
+              "subtopics": [
+                "Fractions",
+                "Time and distance",
+                "Ratio and proportion",
+                "Percentage",
+                "Profit and loss",
+                "Interest and discounting",
+                "Averages"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1-U06",
+      "title": "Logical Reasoning",
+      "sections": [
+        {
+          "id": "P1-U06-S01",
+          "title": "Arguments and inference",
+          "topics": [
+            {
+              "id": "P1-U06-T01",
+              "title": "Structure of Arguments",
+              "subtopics": [
+                "Argument forms",
+                "Categorical propositions",
+                "Mood and figure",
+                "Formal and informal fallacies",
+                "Uses of language",
+                "Connotation and denotation",
+                "Classical square of opposition"
+              ]
+            },
+            {
+              "id": "P1-U06-T02",
+              "title": "Deductive and Inductive Reasoning",
+              "subtopics": [
+                "Distinguishing deductive and inductive reasoning"
+              ]
+            },
+            {
+              "id": "P1-U06-T03",
+              "title": "Analogies",
+              "subtopics": [
+                "Analogical reasoning"
+              ]
+            },
+            {
+              "id": "P1-U06-T04",
+              "title": "Venn Diagrams",
+              "subtopics": [
+                "Simple use",
+                "Multiple use",
+                "Validity of arguments"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P1-U06-S02",
+          "title": "Indian logic",
+          "topics": [
+            {
+              "id": "P1-U06-T05",
+              "title": "Indian Logic and Means of Knowledge",
+              "subtopics": [
+                "Pratyaksha",
+                "Anumana",
+                "Upamana",
+                "Shabda",
+                "Arthapatti",
+                "Anupalabddhi (official syllabus spelling)"
+              ]
+            },
+            {
+              "id": "P1-U06-T06",
+              "title": "Anumana, Vyapti and Hetvabhasas",
+              "subtopics": [
+                "Structure and kinds of inference",
+                "Vyapti",
+                "Fallacies of inference"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1-U07",
+      "title": "Data Interpretation",
+      "sections": [
+        {
+          "id": "P1-U07-S01",
+          "title": "Data and representation",
+          "topics": [
+            {
+              "id": "P1-U07-T01",
+              "title": "Sources, Acquisition and Classification of Data",
+              "subtopics": [
+                "Sources",
+                "Acquisition",
+                "Classification"
+              ]
+            },
+            {
+              "id": "P1-U07-T02",
+              "title": "Quantitative and Qualitative Data",
+              "subtopics": [
+                "Quantitative data",
+                "Qualitative data"
+              ]
+            },
+            {
+              "id": "P1-U07-T03",
+              "title": "Graphical Representation and Mapping",
+              "subtopics": [
+                "Bar chart",
+                "Histogram",
+                "Pie chart",
+                "Table chart",
+                "Line chart",
+                "Mapping of data"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P1-U07-S02",
+          "title": "Interpretation and governance",
+          "topics": [
+            {
+              "id": "P1-U07-T04",
+              "title": "Data Interpretation",
+              "subtopics": [
+                "Interpreting tables, charts and graphs"
+              ]
+            },
+            {
+              "id": "P1-U07-T05",
+              "title": "Data and Governance",
+              "subtopics": [
+                "Data in governance"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1-U08",
+      "title": "Information and Communication Technology (ICT)",
+      "sections": [
+        {
+          "id": "P1-U08-S01",
+          "title": "ICT fundamentals and applications",
+          "topics": [
+            {
+              "id": "P1-U08-T01",
+              "title": "ICT Abbreviations and Terminology",
+              "subtopics": [
+                "General abbreviations",
+                "Terminology"
+              ]
+            },
+            {
+              "id": "P1-U08-T02",
+              "title": "Internet, Intranet and Communication Tools",
+              "subtopics": [
+                "Internet",
+                "Intranet",
+                "E-mail",
+                "Audio conferencing",
+                "Video conferencing"
+              ]
+            },
+            {
+              "id": "P1-U08-T03",
+              "title": "Digital Initiatives in Higher Education",
+              "subtopics": [
+                "Digital initiatives"
+              ]
+            },
+            {
+              "id": "P1-U08-T04",
+              "title": "ICT and Governance",
+              "subtopics": [
+                "ICT in governance"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1-U09",
+      "title": "People, Development and Environment",
+      "sections": [
+        {
+          "id": "P1-U09-S01",
+          "title": "Development and human-environment interaction",
+          "topics": [
+            {
+              "id": "P1-U09-T01",
+              "title": "Development and Environment",
+              "subtopics": [
+                "Millennium Development Goals",
+                "Sustainable Development Goals"
+              ]
+            },
+            {
+              "id": "P1-U09-T02",
+              "title": "Human-Environment Interaction",
+              "subtopics": [
+                "Anthropogenic activities",
+                "Environmental impacts"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P1-U09-S02",
+          "title": "Environmental issues, resources and hazards",
+          "topics": [
+            {
+              "id": "P1-U09-T03",
+              "title": "Environmental Issues",
+              "subtopics": [
+                "Local, regional and global issues",
+                "Air, water, soil and noise pollution",
+                "Solid, liquid, biomedical, hazardous and electronic waste",
+                "Climate change and socio-economic/political dimensions"
+              ]
+            },
+            {
+              "id": "P1-U09-T04",
+              "title": "Impacts of Pollutants on Human Health",
+              "subtopics": [
+                "Human health impacts"
+              ]
+            },
+            {
+              "id": "P1-U09-T05",
+              "title": "Natural and Energy Resources",
+              "subtopics": [
+                "Solar",
+                "Wind",
+                "Soil",
+                "Hydro",
+                "Geothermal",
+                "Biomass",
+                "Nuclear",
+                "Forests"
+              ]
+            },
+            {
+              "id": "P1-U09-T06",
+              "title": "Natural Hazards and Disasters",
+              "subtopics": [
+                "Mitigation strategies"
+              ]
+            },
+            {
+              "id": "P1-U09-T07",
+              "title": "Environmental Laws, Policies and International Agreements",
+              "subtopics": [
+                "Environment Protection Act 1986",
+                "National Action Plan on Climate Change",
+                "Montreal Protocol",
+                "Rio Summit",
+                "Convention on Biodiversity",
+                "Kyoto Protocol",
+                "Paris Agreement",
+                "International Solar Alliance"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1-U10",
+      "title": "Higher Education System",
+      "sections": [
+        {
+          "id": "P1-U10-S01",
+          "title": "Institutions and evolution",
+          "topics": [
+            {
+              "id": "P1-U10-T01",
+              "title": "Institutions of Higher Learning in Ancient India",
+              "subtopics": [
+                "Ancient institutions"
+              ]
+            },
+            {
+              "id": "P1-U10-T02",
+              "title": "Evolution of Higher Learning and Research after Independence",
+              "subtopics": [
+                "Post-independence development"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P1-U10-S02",
+          "title": "Programmes and governance",
+          "topics": [
+            {
+              "id": "P1-U10-T03",
+              "title": "Learning Programmes in India",
+              "subtopics": [
+                "Oriental",
+                "Conventional",
+                "Non-conventional"
+              ]
+            },
+            {
+              "id": "P1-U10-T04",
+              "title": "Professional, Technical and Skill-Based Education",
+              "subtopics": [
+                "Professional education",
+                "Technical education",
+                "Skill-based education"
+              ]
+            },
+            {
+              "id": "P1-U10-T05",
+              "title": "Value and Environmental Education",
+              "subtopics": [
+                "Value education",
+                "Environmental education"
+              ]
+            },
+            {
+              "id": "P1-U10-T06",
+              "title": "Policies, Governance and Administration",
+              "subtopics": [
+                "Policies",
+                "Governance",
+                "Administration"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "official_syllabus_notes": [
+    "Five questions, each carrying 2 marks, are to be set from each module.",
+    "Whenever graphical/pictorial questions are set for sighted candidates, a passage followed by an equal number of questions and weightage is to be set for visually impaired candidates."
+  ]
+}

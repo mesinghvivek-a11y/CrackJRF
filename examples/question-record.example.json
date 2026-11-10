@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "question_code": "GEO-Q-000001",
+  "subject_code": "80",
+  "question_type": "mcq",
+  "status": "draft",
+  "translations": [
+    {
+      "language": "en",
+      "stem_blocks": [{"type":"paragraph","text":"Synthetic example: Which concept describes long-term atmospheric patterns?"}],
+      "options": [
+        {"key":"A","content_blocks":[{"type":"paragraph","text":"Weather"}]},
+        {"key":"B","content_blocks":[{"type":"paragraph","text":"Climate"}]},
+        {"key":"C","content_blocks":[{"type":"paragraph","text":"Insolation"}]},
+        {"key":"D","content_blocks":[{"type":"paragraph","text":"Humidity"}]}
+      ]
+    }
+  ],
+  "classifications": [{"node_id":"GEO-U02-T06","is_primary":true}],
+  "exam_appearances": [],
+  "answer_evidence": [],
+  "verified_answer": null,
+  "source_provenance": [{"source_type":"editorial","source_document":"synthetic-example"}],
+  "notes": "Synthetic demonstration record. Do not interpret as an imported NTA PYQ. Option IDs are local A/B/C/D keys; NTA option IDs are intentionally not stored."
+}

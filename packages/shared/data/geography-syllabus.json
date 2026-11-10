@@ -1,0 +1,1430 @@
+{
+  "subject": {
+    "code": "80",
+    "name": "Geography",
+    "paper": "Paper II",
+    "source": "Geography_English.pdf"
+  },
+  "version": "official-syllabus-expanded-v1",
+  "classification_note": "Official syllabus wording is preserved as source context; sections and finer topics/subtopics are organizational expansions for question mapping.",
+  "units": [
+    {
+      "id": "GEO-U01",
+      "title": "Geomorphology",
+      "source_pages": [
+        2
+      ],
+      "sections": [
+        {
+          "id": "GEO-U01-S01",
+          "title": "Earth dynamics and tectonics",
+          "topics": [
+            {
+              "id": "GEO-U01-T01",
+              "title": "Continental Drift",
+              "subtopics": [
+                "Evidence and arguments",
+                "Historical development"
+              ]
+            },
+            {
+              "id": "GEO-U01-T02",
+              "title": "Plate Tectonics",
+              "subtopics": [
+                "Plate boundaries",
+                "Plate movement and driving mechanisms"
+              ]
+            },
+            {
+              "id": "GEO-U01-T03",
+              "title": "Endogenetic and Exogenetic Forces",
+              "subtopics": [
+                "Internal forces",
+                "External forces"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U01-S02",
+          "title": "Weathering, denudation and slopes",
+          "topics": [
+            {
+              "id": "GEO-U01-T04",
+              "title": "Denudation and Weathering",
+              "subtopics": [
+                "Physical weathering",
+                "Chemical weathering",
+                "Biological weathering"
+              ]
+            },
+            {
+              "id": "GEO-U01-T05",
+              "title": "Geomorphic Cycle",
+              "subtopics": [
+                "Davis cycle",
+                "Penck cycle"
+              ]
+            },
+            {
+              "id": "GEO-U01-T06",
+              "title": "Slope Development",
+              "subtopics": [
+                "Slope development theories",
+                "Slope processes"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U01-S03",
+          "title": "Earth movements and hazards",
+          "topics": [
+            {
+              "id": "GEO-U01-T07",
+              "title": "Earth Movements",
+              "subtopics": [
+                "Seismicity",
+                "Folding",
+                "Faulting",
+                "Vulcanicity"
+              ]
+            },
+            {
+              "id": "GEO-U01-T08",
+              "title": "Landform Occurrence and Geomorphic Hazards",
+              "subtopics": [
+                "Earthquakes",
+                "Volcanoes",
+                "Landslides",
+                "Avalanches"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GEO-U02",
+      "title": "Climatology",
+      "source_pages": [
+        2
+      ],
+      "sections": [
+        {
+          "id": "GEO-U02-S01",
+          "title": "Atmosphere, energy and temperature",
+          "topics": [
+            {
+              "id": "GEO-U02-T01",
+              "title": "Composition and Structure of Atmosphere",
+              "subtopics": [
+                "Atmospheric composition",
+                "Atmospheric layers"
+              ]
+            },
+            {
+              "id": "GEO-U02-T02",
+              "title": "Insolation and Heat Budget of Earth",
+              "subtopics": [
+                "Insolation",
+                "Terrestrial radiation",
+                "Heat budget"
+              ]
+            },
+            {
+              "id": "GEO-U02-T03",
+              "title": "Temperature",
+              "subtopics": [
+                "Horizontal and vertical distribution",
+                "Temperature inversion"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U02-S02",
+          "title": "Pressure, winds and circulation",
+          "topics": [
+            {
+              "id": "GEO-U02-T04",
+              "title": "Pressure and Winds",
+              "subtopics": [
+                "Pressure belts",
+                "Planetary winds",
+                "Local and periodic winds"
+              ]
+            },
+            {
+              "id": "GEO-U02-T05",
+              "title": "Atmospheric Circulation",
+              "subtopics": [
+                "Air masses",
+                "Fronts",
+                "Upper air circulation",
+                "Cyclones and anticyclones",
+                "Tropical cyclones",
+                "Temperate cyclones"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U02-S03",
+          "title": "Climate systems and variability",
+          "topics": [
+            {
+              "id": "GEO-U02-T06",
+              "title": "Climatic Classification",
+              "subtopics": [
+                "Koppen classification",
+                "Thornthwaite classification"
+              ]
+            },
+            {
+              "id": "GEO-U02-T07",
+              "title": "ENSO Events",
+              "subtopics": [
+                "El Nino",
+                "La Nina",
+                "Southern Oscillation"
+              ]
+            },
+            {
+              "id": "GEO-U02-T08",
+              "title": "Climate Change",
+              "subtopics": [
+                "Evidence of climatic change",
+                "Past climatic change and causes",
+                "Human impact on global climate"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U02-S04",
+          "title": "Meteorological hazards",
+          "topics": [
+            {
+              "id": "GEO-U02-T09",
+              "title": "Meteorological Hazards and Disasters",
+              "subtopics": [
+                "Cyclones",
+                "Thunderstorms",
+                "Tornadoes",
+                "Hailstorms",
+                "Heat and cold waves",
+                "Drought",
+                "Cloudburst",
+                "Glacial Lake Outburst Flood (GLOF)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GEO-U03",
+      "title": "Oceanography",
+      "source_pages": [
+        2
+      ],
+      "sections": [
+        {
+          "id": "GEO-U03-S01",
+          "title": "Ocean structure and properties",
+          "topics": [
+            {
+              "id": "GEO-U03-T01",
+              "title": "Relief of Oceans",
+              "subtopics": [
+                "Continental shelf and slope",
+                "Abyssal plains",
+                "Ocean trenches and ridges"
+              ]
+            },
+            {
+              "id": "GEO-U03-T02",
+              "title": "Composition and Properties of Ocean Water",
+              "subtopics": [
+                "Temperature",
+                "Density",
+                "Salinity"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U03-S02",
+          "title": "Ocean circulation and dynamics",
+          "topics": [
+            {
+              "id": "GEO-U03-T03",
+              "title": "Ocean Circulation",
+              "subtopics": [
+                "Warm currents",
+                "Cold currents"
+              ]
+            },
+            {
+              "id": "GEO-U03-T04",
+              "title": "Waves and Tides",
+              "subtopics": [
+                "Waves",
+                "Tides"
+              ]
+            },
+            {
+              "id": "GEO-U03-T05",
+              "title": "Sea Level Changes",
+              "subtopics": [
+                "Sea-level variation"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U03-S03",
+          "title": "Ocean hazards",
+          "topics": [
+            {
+              "id": "GEO-U03-T06",
+              "title": "Ocean Hazards",
+              "subtopics": [
+                "Tsunami",
+                "Cyclone"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GEO-U04",
+      "title": "Geography of Environment",
+      "source_pages": [
+        2
+      ],
+      "sections": [
+        {
+          "id": "GEO-U04-S01",
+          "title": "Ecology and ecosystem functions",
+          "topics": [
+            {
+              "id": "GEO-U04-T01",
+              "title": "Ecosystem and Human Ecology",
+              "subtopics": [
+                "Ecosystem components",
+                "Geographic classification of ecosystems",
+                "Human ecology"
+              ]
+            },
+            {
+              "id": "GEO-U04-T02",
+              "title": "Trophic Levels and Energy Flow",
+              "subtopics": [
+                "Trophic levels",
+                "Energy flow",
+                "Ecological pyramids"
+              ]
+            },
+            {
+              "id": "GEO-U04-T03",
+              "title": "Biogeochemical Cycles",
+              "subtopics": [
+                "Geo-chemical cycles",
+                "Carbon cycle",
+                "Nitrogen cycle",
+                "Oxygen cycle"
+              ]
+            },
+            {
+              "id": "GEO-U04-T04",
+              "title": "Food Chain and Food Web",
+              "subtopics": [
+                "Food chains",
+                "Food webs"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U04-S02",
+          "title": "Human-environment interaction and ethics",
+          "topics": [
+            {
+              "id": "GEO-U04-T05",
+              "title": "Human Interaction and Environmental Impacts",
+              "subtopics": [
+                "Human-environment interactions",
+                "Environmental impacts"
+              ]
+            },
+            {
+              "id": "GEO-U04-T06",
+              "title": "Environmental Ethics and Deep Ecology",
+              "subtopics": [
+                "Environmental ethics",
+                "Deep ecology"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U04-S03",
+          "title": "Environmental hazards, policies and programmes",
+          "topics": [
+            {
+              "id": "GEO-U04-T07",
+              "title": "Environmental Hazards and Disasters",
+              "subtopics": [
+                "Global warming",
+                "Urban heat island",
+                "Atmospheric pollution",
+                "Water pollution",
+                "Land degradation"
+              ]
+            },
+            {
+              "id": "GEO-U04-T08",
+              "title": "National Programmes and Policies",
+              "subtopics": [
+                "Legal framework",
+                "Environmental policy"
+              ]
+            },
+            {
+              "id": "GEO-U04-T09",
+              "title": "International Treaties and Programmes",
+              "subtopics": [
+                "Brundtland Commission",
+                "Kyoto Protocol",
+                "Agenda 21",
+                "Sustainable Development Goals",
+                "Paris Agreement"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GEO-U05",
+      "title": "Population and Settlement Geography",
+      "source_pages": [
+        3
+      ],
+      "sections": [
+        {
+          "id": "GEO-U05-S01",
+          "title": "Population Geography",
+          "topics": [
+            {
+              "id": "GEO-U05-T01",
+              "title": "Sources of Population Data",
+              "subtopics": [
+                "Census",
+                "Sample surveys",
+                "Vital statistics",
+                "Data reliability and errors"
+              ]
+            },
+            {
+              "id": "GEO-U05-T02",
+              "title": "World Population Distribution",
+              "subtopics": [
+                "Measures",
+                "Patterns",
+                "Determinants"
+              ]
+            },
+            {
+              "id": "GEO-U05-T03",
+              "title": "World Population Growth",
+              "subtopics": [
+                "Prehistoric population",
+                "Modern population growth"
+              ]
+            },
+            {
+              "id": "GEO-U05-T04",
+              "title": "Demographic Transition",
+              "subtopics": [
+                "Stages and models"
+              ]
+            },
+            {
+              "id": "GEO-U05-T05",
+              "title": "Theories of Population Growth",
+              "subtopics": [
+                "Malthus",
+                "Sadler",
+                "Ricardo"
+              ]
+            },
+            {
+              "id": "GEO-U05-T06",
+              "title": "Fertility and Mortality Analysis",
+              "subtopics": [
+                "Indices",
+                "Determinants",
+                "World patterns"
+              ]
+            },
+            {
+              "id": "GEO-U05-T07",
+              "title": "Migration",
+              "subtopics": [
+                "Types",
+                "Causes and consequences",
+                "Migration models"
+              ]
+            },
+            {
+              "id": "GEO-U05-T08",
+              "title": "Population Composition and Characteristics",
+              "subtopics": [
+                "Age structure",
+                "Sex composition",
+                "Rural-urban composition",
+                "Occupational structure",
+                "Educational levels"
+              ]
+            },
+            {
+              "id": "GEO-U05-T09",
+              "title": "Population Policies",
+              "subtopics": [
+                "Developed countries",
+                "Developing countries"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U05-S02",
+          "title": "Settlement Geography",
+          "topics": [
+            {
+              "id": "GEO-U05-T10",
+              "title": "Rural Settlements",
+              "subtopics": [
+                "Types",
+                "Patterns",
+                "Distribution"
+              ]
+            },
+            {
+              "id": "GEO-U05-T11",
+              "title": "Contemporary Problems of Rural Settlements",
+              "subtopics": [
+                "Rural-urban migration",
+                "Land-use changes",
+                "Land acquisition and transactions"
+              ]
+            },
+            {
+              "id": "GEO-U05-T12",
+              "title": "Theories of Origin of Towns",
+              "subtopics": [
+                "Gordon Childe",
+                "Henri Pirenne",
+                "Lewis Mumford"
+              ]
+            },
+            {
+              "id": "GEO-U05-T13",
+              "title": "Urbanization",
+              "subtopics": [
+                "Characteristics and processes",
+                "Factors of urban growth",
+                "Trends in developed countries",
+                "Trends in developing countries",
+                "Size, structure and functions of urban areas"
+              ]
+            },
+            {
+              "id": "GEO-U05-T14",
+              "title": "Urban Systems",
+              "subtopics": [
+                "Primate city",
+                "Rank-size rule"
+              ]
+            },
+            {
+              "id": "GEO-U05-T15",
+              "title": "Central Place Theories",
+              "subtopics": [
+                "Christaller",
+                "Losch"
+              ]
+            },
+            {
+              "id": "GEO-U05-T16",
+              "title": "Internal Structure of the City and Urban Land Use Models",
+              "subtopics": [
+                "Burgess model",
+                "Harris and Ullman model",
+                "Hoyt model"
+              ]
+            },
+            {
+              "id": "GEO-U05-T17",
+              "title": "Contemporary Urban Concepts and Forms",
+              "subtopics": [
+                "Megacities",
+                "Global cities",
+                "Edge cities",
+                "Peri-urban areas",
+                "Rural-urban fringe",
+                "Suburban, ring and satellite towns"
+              ]
+            },
+            {
+              "id": "GEO-U05-T18",
+              "title": "Urban Social Geography",
+              "subtopics": [
+                "Social segregation",
+                "Urban social area analysis",
+                "Slums",
+                "Informal sector growth",
+                "Crime and social exclusion"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GEO-U06",
+      "title": "Geography of Economic Activities and Regional Development",
+      "source_pages": [
+        3,
+        4
+      ],
+      "sections": [
+        {
+          "id": "GEO-U06-S01",
+          "title": "Economic Geography",
+          "topics": [
+            {
+              "id": "GEO-U06-T01",
+              "title": "Spatial Organisation of Economic Activities",
+              "subtopics": [
+                "Primary activities",
+                "Secondary activities",
+                "Tertiary activities",
+                "Quaternary activities"
+              ]
+            },
+            {
+              "id": "GEO-U06-T02",
+              "title": "Natural Resources",
+              "subtopics": [
+                "Classification",
+                "Distribution",
+                "Associated problems",
+                "Resource management"
+              ]
+            },
+            {
+              "id": "GEO-U06-T03",
+              "title": "World Energy Crises",
+              "subtopics": [
+                "Developed countries",
+                "Developing countries"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U06-S02",
+          "title": "Agricultural Geography",
+          "topics": [
+            {
+              "id": "GEO-U06-T04",
+              "title": "Land Capability and Land Use Planning",
+              "subtopics": [
+                "Land capability classification",
+                "Land-use planning"
+              ]
+            },
+            {
+              "id": "GEO-U06-T05",
+              "title": "Cropping Pattern and Crop Combination",
+              "subtopics": [
+                "Weaver method",
+                "Doi method",
+                "Rafiullah method"
+              ]
+            },
+            {
+              "id": "GEO-U06-T06",
+              "title": "Crop Diversification",
+              "subtopics": [
+                "Measures and patterns"
+              ]
+            },
+            {
+              "id": "GEO-U06-T07",
+              "title": "Von Thunen Model",
+              "subtopics": [
+                "Assumptions",
+                "Land-use rings",
+                "Applications and limitations"
+              ]
+            },
+            {
+              "id": "GEO-U06-T08",
+              "title": "Agricultural Productivity",
+              "subtopics": [
+                "Measurement",
+                "Determinants",
+                "Regional variations"
+              ]
+            },
+            {
+              "id": "GEO-U06-T09",
+              "title": "Agricultural Systems of the World",
+              "subtopics": [
+                "World agricultural systems"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U06-S03",
+          "title": "Industrial Geography",
+          "topics": [
+            {
+              "id": "GEO-U06-T10",
+              "title": "Classification of Industries",
+              "subtopics": [
+                "Industrial classifications"
+              ]
+            },
+            {
+              "id": "GEO-U06-T11",
+              "title": "Factors and Theories of Industrial Location",
+              "subtopics": [
+                "A. Weber",
+                "E. M. Hoover",
+                "August Losch",
+                "A. Pred",
+                "D. M. Smith"
+              ]
+            },
+            {
+              "id": "GEO-U06-T12",
+              "title": "World Industrial Regions",
+              "subtopics": [
+                "Major industrial regions"
+              ]
+            },
+            {
+              "id": "GEO-U06-T13",
+              "title": "Globalisation and Manufacturing",
+              "subtopics": [
+                "Impacts in less developed countries"
+              ]
+            },
+            {
+              "id": "GEO-U06-T14",
+              "title": "Tourism Industry",
+              "subtopics": [
+                "Tourism distribution and growth"
+              ]
+            },
+            {
+              "id": "GEO-U06-T15",
+              "title": "ICT and Knowledge Production Industries",
+              "subtopics": [
+                "ICT industries",
+                "Education and R&D industries"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U06-S04",
+          "title": "Geography of Transport and Trade",
+          "topics": [
+            {
+              "id": "GEO-U06-T16",
+              "title": "Spatial Interaction Theories and Models",
+              "subtopics": [
+                "Edward Ullman",
+                "M. E. Hurst"
+              ]
+            },
+            {
+              "id": "GEO-U06-T17",
+              "title": "Connectivity and Accessibility",
+              "subtopics": [
+                "Measures",
+                "Indices"
+              ]
+            },
+            {
+              "id": "GEO-U06-T18",
+              "title": "Spatial Flow Models",
+              "subtopics": [
+                "Gravity model",
+                "Variants of gravity model"
+              ]
+            },
+            {
+              "id": "GEO-U06-T19",
+              "title": "World Trade and Globalisation",
+              "subtopics": [
+                "WTO",
+                "Globalisation and liberalisation",
+                "World trade patterns"
+              ]
+            },
+            {
+              "id": "GEO-U06-T20",
+              "title": "Regional Cooperation and Trade",
+              "subtopics": [
+                "Inter-regional cooperation",
+                "Intra-regional cooperation",
+                "Problems and prospects"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U06-S05",
+          "title": "Regional Development",
+          "topics": [
+            {
+              "id": "GEO-U06-T21",
+              "title": "Typology of Regions",
+              "subtopics": [
+                "Formal regions",
+                "Fictional regions (official syllabus wording)"
+              ]
+            },
+            {
+              "id": "GEO-U06-T22",
+              "title": "World Regional Disparities",
+              "subtopics": [
+                "Regional inequalities"
+              ]
+            },
+            {
+              "id": "GEO-U06-T23",
+              "title": "Theories of Regional Development",
+              "subtopics": [
+                "Albert O. Hirschman",
+                "Gunnar Myrdal",
+                "John Friedman",
+                "Dependency theory"
+              ]
+            },
+            {
+              "id": "GEO-U06-T24",
+              "title": "Global Economic Blocks",
+              "subtopics": [
+                "Economic blocs"
+              ]
+            },
+            {
+              "id": "GEO-U06-T25",
+              "title": "Regional Development and Social Movements in India",
+              "subtopics": [
+                "Regional development",
+                "Social movements"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GEO-U07",
+      "title": "Cultural, Social and Political Geography",
+      "source_pages": [
+        4,
+        5
+      ],
+      "sections": [
+        {
+          "id": "GEO-U07-S01",
+          "title": "Cultural and Social Geography",
+          "topics": [
+            {
+              "id": "GEO-U07-T01",
+              "title": "Culture and Cultural Regions",
+              "subtopics": [
+                "Concept of culture",
+                "Cultural complexes",
+                "Cultural areas and regions",
+                "Cultural heritage"
+              ]
+            },
+            {
+              "id": "GEO-U07-T02",
+              "title": "Cultural Ecology and Convergence",
+              "subtopics": [
+                "Cultural ecology",
+                "Cultural convergence"
+              ]
+            },
+            {
+              "id": "GEO-U07-T03",
+              "title": "Social Structure and Processes",
+              "subtopics": [
+                "Social structure",
+                "Social processes"
+              ]
+            },
+            {
+              "id": "GEO-U07-T04",
+              "title": "Social Well-being and Quality of Life",
+              "subtopics": [
+                "Well-being",
+                "Quality of life",
+                "Social exclusion"
+              ]
+            },
+            {
+              "id": "GEO-U07-T05",
+              "title": "Spatial Distribution of Social Groups in India",
+              "subtopics": [
+                "Tribe",
+                "Caste",
+                "Religion",
+                "Language"
+              ]
+            },
+            {
+              "id": "GEO-U07-T06",
+              "title": "Health Geography and Diseases Ecology",
+              "subtopics": [
+                "Environment and human health",
+                "Diseases ecology"
+              ]
+            },
+            {
+              "id": "GEO-U07-T07",
+              "title": "Nutritional Status",
+              "subtopics": [
+                "Etiological conditions",
+                "Classification",
+                "Spatial and seasonal patterns in India"
+              ]
+            },
+            {
+              "id": "GEO-U07-T08",
+              "title": "Health Care in India",
+              "subtopics": [
+                "Planning and policies",
+                "Medical tourism"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U07-S02",
+          "title": "Political Geography",
+          "topics": [
+            {
+              "id": "GEO-U07-T09",
+              "title": "Boundaries and Frontiers",
+              "subtopics": [
+                "Boundaries",
+                "Frontiers",
+                "India-specific context"
+              ]
+            },
+            {
+              "id": "GEO-U07-T10",
+              "title": "Heartland and Rimland Theories",
+              "subtopics": [
+                "Heartland theory",
+                "Rimland theory"
+              ]
+            },
+            {
+              "id": "GEO-U07-T11",
+              "title": "Trends in Political Geography",
+              "subtopics": [
+                "Contemporary trends and developments"
+              ]
+            },
+            {
+              "id": "GEO-U07-T12",
+              "title": "Geography of Federalism and Electoral Geography",
+              "subtopics": [
+                "Federalism",
+                "Electoral reforms in India",
+                "Electoral behaviour"
+              ]
+            },
+            {
+              "id": "GEO-U07-T13",
+              "title": "Geopolitics",
+              "subtopics": [
+                "Climate change",
+                "World resources",
+                "Indian Ocean",
+                "World natural resources",
+                "Neopolitics of World Natural Resources (official syllabus wording)"
+              ]
+            },
+            {
+              "id": "GEO-U07-T14",
+              "title": "Regional Organisations of Cooperation",
+              "subtopics": [
+                "SAARC",
+                "ASEAN",
+                "OPEC",
+                "EU"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GEO-U08",
+      "title": "Geographic Thought",
+      "source_pages": [
+        5
+      ],
+      "sections": [
+        {
+          "id": "GEO-U08-S01",
+          "title": "Historical contributions",
+          "topics": [
+            {
+              "id": "GEO-U08-T01",
+              "title": "Ancient Geographical Scholars",
+              "subtopics": [
+                "Greek scholars",
+                "Roman scholars",
+                "Arab scholars",
+                "Chinese scholars",
+                "Indian scholars"
+              ]
+            },
+            {
+              "id": "GEO-U08-T02",
+              "title": "Contributions of Modern Geographers",
+              "subtopics": [
+                "Bernhardus Varenius",
+                "Immanuel Kant",
+                "Alexander von Humboldt",
+                "Carl Ritter",
+                "Scheafer (official syllabus spelling)",
+                "Hartshorne"
+              ]
+            },
+            {
+              "id": "GEO-U08-T03",
+              "title": "Darwinian Theory and Geography",
+              "subtopics": [
+                "Impact on geographical thought"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U08-S02",
+          "title": "Traditions, dualisms and perspectives",
+          "topics": [
+            {
+              "id": "GEO-U08-T04",
+              "title": "Contemporary Trends in Indian Geography",
+              "subtopics": [
+                "Cartography",
+                "Thematic contributions",
+                "Methodological contributions"
+              ]
+            },
+            {
+              "id": "GEO-U08-T05",
+              "title": "Major Geographic Traditions",
+              "subtopics": [
+                "Earth science",
+                "Man-environment relationship",
+                "Area studies",
+                "Spatial analysis"
+              ]
+            },
+            {
+              "id": "GEO-U08-T06",
+              "title": "Dualisms in Geographic Studies",
+              "subtopics": [
+                "Physical vs human",
+                "Regional vs systematic",
+                "Qualitative vs quantitative",
+                "Idiographic vs nomothetic"
+              ]
+            },
+            {
+              "id": "GEO-U08-T07",
+              "title": "Paradigm Shift",
+              "subtopics": [
+                "Paradigm shifts in geography"
+              ]
+            },
+            {
+              "id": "GEO-U08-T08",
+              "title": "Perspectives in Geography",
+              "subtopics": [
+                "Positivism",
+                "Behaviouralism",
+                "Humanism",
+                "Structuralism",
+                "Feminism",
+                "Postmodernism"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GEO-U09",
+      "title": "Geographical Techniques",
+      "source_pages": [
+        5,
+        6
+      ],
+      "sections": [
+        {
+          "id": "GEO-U09-S01",
+          "title": "Geographic data and cartography",
+          "topics": [
+            {
+              "id": "GEO-U09-T01",
+              "title": "Sources of Geographic Information and Data",
+              "subtopics": [
+                "Spatial data",
+                "Non-spatial data"
+              ]
+            },
+            {
+              "id": "GEO-U09-T02",
+              "title": "Types of Maps and Map Making",
+              "subtopics": [
+                "Choropleth",
+                "Isarithmic",
+                "Dasymetric",
+                "Chorochromatic",
+                "Flow maps"
+              ]
+            },
+            {
+              "id": "GEO-U09-T03",
+              "title": "Data Representation on Maps",
+              "subtopics": [
+                "Pie diagrams",
+                "Bar diagrams",
+                "Line graphs"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U09-S02",
+          "title": "GIS and geospatial technologies",
+          "topics": [
+            {
+              "id": "GEO-U09-T04",
+              "title": "GIS Database",
+              "subtopics": [
+                "Raster data",
+                "Vector data",
+                "Attribute data"
+              ]
+            },
+            {
+              "id": "GEO-U09-T05",
+              "title": "Functions of GIS",
+              "subtopics": [
+                "Conversion",
+                "Editing",
+                "Analysis"
+              ]
+            },
+            {
+              "id": "GEO-U09-T06",
+              "title": "DEM and Georeferencing",
+              "subtopics": [
+                "Digital Elevation Model",
+                "Coordinate systems",
+                "Map projections",
+                "Datum"
+              ]
+            },
+            {
+              "id": "GEO-U09-T07",
+              "title": "GIS Applications",
+              "subtopics": [
+                "Thematic cartography",
+                "Spatial decision support system"
+              ]
+            },
+            {
+              "id": "GEO-U09-T08",
+              "title": "Remote Sensing",
+              "subtopics": [
+                "Electromagnetic spectrum",
+                "Sensors and platforms",
+                "Resolution and types",
+                "Image interpretation",
+                "Photogrammetry",
+                "Aerial photographs",
+                "Digital image processing",
+                "Remote sensing technology and big data"
+              ]
+            },
+            {
+              "id": "GEO-U09-T09",
+              "title": "GPS",
+              "subtopics": [
+                "Space segment",
+                "Ground control segment",
+                "Receiver segment",
+                "Applications"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U09-S03",
+          "title": "Quantitative methods and spatial analysis",
+          "topics": [
+            {
+              "id": "GEO-U09-T10",
+              "title": "Measures of Central Tendency, Dispersion and Inequalities",
+              "subtopics": [
+                "Central tendency",
+                "Dispersion",
+                "Inequality measures"
+              ]
+            },
+            {
+              "id": "GEO-U09-T11",
+              "title": "Sampling and Hypothesis Testing",
+              "subtopics": [
+                "Sampling procedures",
+                "Chi-square test",
+                "t-test",
+                "ANOVA"
+              ]
+            },
+            {
+              "id": "GEO-U09-T12",
+              "title": "Time Series, Correlation and Regression",
+              "subtopics": [
+                "Time series analysis",
+                "Correlation analysis",
+                "Regression analysis"
+              ]
+            },
+            {
+              "id": "GEO-U09-T13",
+              "title": "Indices and Composite Indicators",
+              "subtopics": [
+                "Measurement of indices",
+                "Scale-free indicators",
+                "Composite index"
+              ]
+            },
+            {
+              "id": "GEO-U09-T14",
+              "title": "Multivariate Analysis",
+              "subtopics": [
+                "Principal Component Analysis",
+                "Cluster Analysis"
+              ]
+            },
+            {
+              "id": "GEO-U09-T15",
+              "title": "Morphometric Analysis",
+              "subtopics": [
+                "Stream ordering",
+                "Bifurcation ratio",
+                "Drainage density and frequency",
+                "Basin circularity ratio",
+                "Form factor",
+                "Profiles",
+                "Slope analysis",
+                "Clinographic curve",
+                "Hypsographic curve",
+                "Altimetric frequency graph"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GEO-U10",
+      "title": "Geography of India",
+      "source_pages": [
+        6
+      ],
+      "sections": [
+        {
+          "id": "GEO-U10-S01",
+          "title": "Physical geography of India",
+          "topics": [
+            {
+              "id": "GEO-U10-T01",
+              "title": "Physiographic Regions",
+              "subtopics": [
+                "Major physiographic regions",
+                "Characteristics"
+              ]
+            },
+            {
+              "id": "GEO-U10-T02",
+              "title": "Drainage System",
+              "subtopics": [
+                "Himalayan drainage",
+                "Peninsular drainage"
+              ]
+            },
+            {
+              "id": "GEO-U10-T03",
+              "title": "Climate and Indian Monsoon",
+              "subtopics": [
+                "Seasonal weather characteristics",
+                "Climatic divisions",
+                "Monsoon mechanism and characteristics",
+                "Jet streams"
+              ]
+            },
+            {
+              "id": "GEO-U10-T04",
+              "title": "Himalayan Cryosphere",
+              "subtopics": [
+                "Cryosphere"
+              ]
+            },
+            {
+              "id": "GEO-U10-T05",
+              "title": "Natural Resources of India",
+              "subtopics": [
+                "Soil",
+                "Vegetation",
+                "Water",
+                "Mineral",
+                "Marine resources"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U10-S02",
+          "title": "Population and agriculture of India",
+          "topics": [
+            {
+              "id": "GEO-U10-T06",
+              "title": "Population of India",
+              "subtopics": [
+                "Spatial distribution",
+                "Growth and composition",
+                "Rural-urban",
+                "Age and sex",
+                "Occupational and educational",
+                "Ethnic and religious",
+                "Determinants",
+                "Population policies"
+              ]
+            },
+            {
+              "id": "GEO-U10-T07",
+              "title": "Agriculture of India",
+              "subtopics": [
+                "Production, productivity and yield",
+                "Major food crops",
+                "Major crop regions",
+                "Regional variations",
+                "Environmental, technological and institutional factors",
+                "Agro-climatic zones",
+                "Green Revolution",
+                "Food security and Right to Food"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U10-S03",
+          "title": "Industry, transport, trade and development",
+          "topics": [
+            {
+              "id": "GEO-U10-T08",
+              "title": "Industrial Development in India",
+              "subtopics": [
+                "Development since Independence",
+                "Industrial regions",
+                "Industrial policies"
+              ]
+            },
+            {
+              "id": "GEO-U10-T09",
+              "title": "Transport Networks",
+              "subtopics": [
+                "Railways",
+                "Roadways",
+                "Waterways",
+                "Airways",
+                "Pipelines"
+              ]
+            },
+            {
+              "id": "GEO-U10-T10",
+              "title": "Internal and External Trade",
+              "subtopics": [
+                "Trends",
+                "Composition",
+                "Directions"
+              ]
+            },
+            {
+              "id": "GEO-U10-T11",
+              "title": "Regional Development Planning in India",
+              "subtopics": [
+                "Regional planning"
+              ]
+            },
+            {
+              "id": "GEO-U10-T12",
+              "title": "Globalisation and Indian Economy",
+              "subtopics": [
+                "Impacts on Indian economy"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GEO-U10-S04",
+          "title": "Natural disasters in India",
+          "topics": [
+            {
+              "id": "GEO-U10-T13",
+              "title": "Natural Disasters in India",
+              "subtopics": [
+                "Earthquake",
+                "Drought",
+                "Flood",
+                "Cyclone",
+                "Tsunami",
+                "Himalayan highland hazards and disasters"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "official_syllabus_notes": [
+    "This expanded hierarchy is based on the supplied Geography syllabus PDF. Original unit terminology is retained where it is unusual or potentially typographical."
+  ]
+}

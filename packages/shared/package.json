@@ -1,0 +1,1 @@
+{"name":"@ugcnet/shared","version":"0.1.0","private":true,"type":"module","exports":{".":"./src/index.ts","./demo":"./src/demo.ts","./syllabus/geography":"./data/geography-syllabus.json","./syllabus/paper1":"./data/paper1-syllabus.json"}}
