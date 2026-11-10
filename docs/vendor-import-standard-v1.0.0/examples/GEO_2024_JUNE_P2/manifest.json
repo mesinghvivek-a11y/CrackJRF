@@ -1,0 +1,67 @@
+{
+  "schema_name": "crackjrf-question-package",
+  "schema_version": "1.0.0",
+  "package_id": "UGCNET-GEO-2024-JUNE-P2-S1",
+  "generated_at": "2026-11-10T12:00:00Z",
+  "provider": {
+    "name": "Example Conversion Provider",
+    "delivery_reference": "PILOT-001",
+    "contact_reference": null
+  },
+  "exam": {
+    "name": "UGC NET",
+    "conducting_body": "NTA",
+    "subject_name": "Geography",
+    "subject_code": "80",
+    "paper": "II",
+    "year": 2024,
+    "session": "June",
+    "session_label": null,
+    "is_re_exam": false,
+    "re_exam_reference": null,
+    "exam_date": null,
+    "shift": "Shift 1"
+  },
+  "question_sequence": {
+    "source": "official_nta_question_paper",
+    "order_preserved": true,
+    "total_questions": 1,
+    "order_start": 1,
+    "notes": "One-question schema demonstration only."
+  },
+  "languages": {
+    "primary": "en",
+    "available": ["en"]
+  },
+  "files": {
+    "common": "questions_common.json",
+    "en": "questions_en.json",
+    "hi": null,
+    "qa_report": "qa_report.json",
+    "asset_manifest": "assets/asset_manifest.json"
+  },
+  "source_documents": [
+    {
+      "source_document_id": "SRC-NTA-001",
+      "role": "official_question_paper",
+      "filename": "Official_Geography_June_2024.pdf",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "language": "en",
+      "notes": "Hash is illustrative, not a real source file hash."
+    },
+    {
+      "source_document_id": "SRC-SOLVED-001",
+      "role": "private_solved_paper",
+      "filename": "Solved_Geography_June_2024.pdf",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "language": "en",
+      "notes": "Hash is illustrative, not a real source file hash."
+    }
+  ],
+  "assets": {
+    "directory": "assets/",
+    "inventory": "assets/asset_manifest.json"
+  },
+  "delivery_status": "partial",
+  "delivery_notes": "Schema demonstration only; not a real examination dataset."
+}

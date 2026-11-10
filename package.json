@@ -13,10 +13,7 @@
     "build:admin": "npm run build -w @ugcnet/admin",
     "typecheck": "npm run typecheck -w @ugcnet/student && npm run typecheck -w @ugcnet/admin && npm run typecheck -w @ugcnet/shared",
     "seed:syllabus": "tsx scripts/seed-syllabus.ts",
-    "validate:question": "node scripts/validate-question.mjs",
-    "import:extraction": "tsx scripts/import-extraction.ts",
-    "extract:pdf": "python scripts/extract_pdf.py",
-    "match:solved": "python scripts/match_solved_papers.py"
+    "validate:question": "node scripts/validate-question.mjs"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.119.0",

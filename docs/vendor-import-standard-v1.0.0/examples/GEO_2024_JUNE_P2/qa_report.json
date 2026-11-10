@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "UGCNET-GEO-2024-JUNE-P2-S1",
+  "official_question_count": 1,
+  "delivered_question_count": 1,
+  "english_count": 1,
+  "hindi_count": 0,
+  "four_option_complete_count": 1,
+  "answer_available_count": 1,
+  "explanation_available_count": 1,
+  "question_order_preserved": true,
+  "unmatched_answer_count": 0,
+  "missing_asset_count": 0,
+  "exceptions": [],
+  "provider_notes": "Illustrative schema example only. All academic content is fictional/example content."
+}

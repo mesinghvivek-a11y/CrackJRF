@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crackjrf.example/schemas/asset-manifest.schema.json",
+  "title": "CrackJRF Asset Manifest",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "package_id", "assets"],
+  "properties": {"schema_version": {"const": "1.0.0"}, "package_id": {"type": "string"}, "assets": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["asset_id", "base_question_id", "language", "asset_type", "filename", "mime_type", "width_px", "height_px", "sha256"], "properties": {"asset_id": {"type": "string"}, "base_question_id": {"type": "string"}, "language": {"enum": ["en", "hi", "shared"]}, "asset_type": {"enum": ["question_crop", "diagram", "map", "table_image", "photograph", "illustration", "other"]}, "filename": {"type": "string"}, "mime_type": {"enum": ["image/png", "image/jpeg", "image/webp"]}, "width_px": {"type": "integer", "minimum": 1}, "height_px": {"type": "integer", "minimum": 1}, "dpi": {"type": ["integer", "null"]}, "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"}, "source_page_number": {"type": ["integer", "null"], "minimum": 1}, "notes": {"type": ["string", "null"]}}}}}
+}

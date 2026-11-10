@@ -1,6 +1,197 @@
-"use client";
-import { useState } from "react";
-import { FileUp, FileText, CheckCircle2, AlertCircle } from "lucide-react";
-export default function ImportsPage(){const [file,setFile]=useState<File|null>(null);const [type,setType]=useState("nta_official");const [subject,setSubject]=useState("80");const [paper,setPaper]=useState("2");const [year,setYear]=useState("2025");const [session,setSession]=useState("June");const [eventType,setEventType]=useState("regular");const [eventLabel,setEventLabel]=useState("");const [examDate,setExamDate]=useState("");const [shift,setShift]=useState("Shift 2");const [language,setLanguage]=useState("bilingual");const [busy,setBusy]=useState(false);const [result,setResult]=useState("");const [error,setError]=useState("");
- async function upload(){if(!file){setError("Choose a PDF first.");return}setBusy(true);setError("");setResult("");const data=new FormData();data.append("file",file);data.append("source_type",type);data.append("subject_code",subject);data.append("paper_number",paper);data.append("year",year);data.append("session",session);data.append("event_type",eventType);data.append("event_label",eventLabel);data.append("exam_date",examDate);data.append("shift",shift);data.append("language",language);try{const r=await fetch("/api/imports",{method:"POST",body:data});const payload=await r.json();if(!r.ok)throw new Error(payload.error??"Upload failed");setResult(`Uploaded successfully. Import job: ${payload.importJobId}. The PDF is registered and queued; extraction is run by the ingestion worker.`);setFile(null)}catch(e){setError(e instanceof Error?e.message:"Upload failed")}finally{setBusy(false)}}
- return <><div className="admin-page-heading"><div><div className="admin-eyebrow">Source ingestion</div><h1>PDF Import</h1><p>Register official NTA question papers and supporting solved papers separately. Combined NTA response-sheet PDFs can contain both Paper I and Paper II.</p></div><span className="admin-tag blue">PDF · Max 100 MB</span></div><div className="admin-grid"><section className="admin-panel"><div className="admin-panel-title">Upload source document</div><div className="admin-panel-sub">Original PDFs are stored privately. They are never published directly to students.</div><div className="drop-zone"><FileUp size={28}/><h3>{file?file.name:"Drop a PDF here or choose a file"}</h3><p>Official question paper, private solved paper or official answer key.</p><label className="admin-button secondary" style={{cursor:"pointer"}}>Choose PDF<input type="file" accept="application/pdf,.pdf" hidden onChange={e=>setFile(e.target.files?.[0]??null)}/></label>{file&&<div style={{marginTop:12,fontSize:10,color:"#16865d"}}>{(file.size/1024/1024).toFixed(2)} MB selected</div>}</div><div className="admin-form-grid" style={{marginTop:17}}><div className="admin-field-group"><label className="admin-label-field">Source type</label><select className="admin-field" value={type} onChange={e=>setType(e.target.value)}><option value="nta_official">Official NTA question paper</option><option value="private_solution">Private institution solved paper</option><option value="official_answer_key">Official NTA answer key</option><option value="other">Other supporting source</option></select></div><div className="admin-field-group"><label className="admin-label-field">Subject</label><select className="admin-field" value={subject} onChange={e=>setSubject(e.target.value)}><option value="80">Geography · 80</option><option value="00">Paper I · 00</option></select></div><div className="admin-field-group"><label className="admin-label-field">Paper number</label><select className="admin-field" value={paper} onChange={e=>setPaper(e.target.value)}><option value="0">Combined PDF: Paper I + Paper II</option><option value="1">Paper I only</option><option value="2">Paper II only</option></select></div><div className="admin-field-group"><label className="admin-label-field">Year</label><input className="admin-field" type="number" min="2014" max="2035" value={year} onChange={e=>setYear(e.target.value)}/></div><div className="admin-field-group"><label className="admin-label-field">Session</label><select className="admin-field" value={session} onChange={e=>setSession(e.target.value)}><option>June</option><option>December</option><option>Other</option></select></div><div className="admin-field-group"><label className="admin-label-field">Exam event type</label><select className="admin-field" value={eventType} onChange={e=>setEventType(e.target.value)}><option value="regular">Regular</option><option value="re_exam">Re-examination</option><option value="special">Special examination</option><option value="unknown">Unknown</option></select></div><div className="admin-field-group"><label className="admin-label-field">Event label (optional)</label><input className="admin-field" value={eventLabel} onChange={e=>setEventLabel(e.target.value)} placeholder="e.g. rescheduled examination"/></div><div className="admin-field-group"><label className="admin-label-field">Exam date</label><input className="admin-field" type="date" value={examDate} onChange={e=>setExamDate(e.target.value)}/></div><div className="admin-field-group"><label className="admin-label-field">Shift</label><input className="admin-field" value={shift} onChange={e=>setShift(e.target.value)} placeholder="Shift 1 / Shift 2"/></div><div className="admin-field-group"><label className="admin-label-field">Language</label><select className="admin-field" value={language} onChange={e=>setLanguage(e.target.value)}><option value="bilingual">English + Hindi</option><option value="en">English</option><option value="hi">Hindi</option><option value="unknown">Unknown</option></select></div></div><button className="admin-button" onClick={upload} disabled={busy||!file}><FileUp size={14}/>{busy?"Uploading…":"Upload and create import job"}</button>{result&&<div className="admin-callout" style={{background:"#edf9f2",borderColor:"#d7efdf",color:"#28704d"}}><CheckCircle2 size={14} style={{verticalAlign:"middle",marginRight:6}}/>{result}</div>}{error&&<div className="admin-callout" style={{background:"#fff4ed",borderColor:"#f4ddd0",color:"#9a4c2b"}}><AlertCircle size={14} style={{verticalAlign:"middle",marginRight:6}}/>{error}</div>}</section><aside className="admin-panel"><div className="admin-panel-title">Ingestion rules</div><div className="admin-row"><div className="admin-row-icon"><FileText size={15}/></div><div className="admin-row-main"><b>Official and solved PDFs stay separate</b><small>Question matching is content-based, not positional.</small></div></div><div className="admin-row"><div className="admin-row-icon">EN</div><div className="admin-row-main"><b>Bilingual extraction</b><small>English and Hindi are language variants of one question.</small></div></div><div className="admin-row"><div className="admin-row-icon">OCR</div><div className="admin-row-main"><b>OCR is only a first pass</b><small>Tables, maps, formulae and Hindi text require human verification.</small></div></div><div className="admin-row"><div className="admin-row-icon">✓</div><div className="admin-row-main"><b>Staging before publishing</b><small>No imported question becomes public automatically.</small></div></div><div className="admin-callout">For a combined PDF, choose “Combined PDF” and keep the default Geography subject as the initial Paper II subject. The extractor labels page-level Paper I / Paper II candidates where section headings are detectable; verify each item in staging. The upload endpoint registers the source PDF and import job. The Python extraction worker is included in the repository and is run separately; this keeps large PDF/OCR processing out of the web request.</div></aside></div></>}
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { Archive, CheckCircle2, CircleAlert, FileJson2, FileUp, RefreshCw, ShieldCheck } from 'lucide-react';
+import { createSupabaseBrowserClient } from '../../lib/supabase';
+
+type ImportPackage = {
+  id: string;
+  package_id: string;
+  schema_version: string;
+  exam_year: number;
+  exam_session: string;
+  paper_number: number;
+  shift: string | null;
+  total_questions: number;
+  imported_questions: number;
+  validation_status: 'valid' | 'valid_with_warnings';
+  status: string;
+  languages: string[];
+  created_at: string;
+  subjects?: { code: string; name: string } | null;
+};
+
+type UploadSuccess = {
+  importPackageId: string;
+  packageId: string;
+  questionCount: number;
+  validationStatus: string;
+  warnings: string[];
+};
+
+export default function ImportsPage() {
+  const [file, setFile] = useState<File | null>(null);
+  const [packages, setPackages] = useState<ImportPackage[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState<UploadSuccess | null>(null);
+
+  const loadPackages = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/imports', { cache: 'no-store' });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? 'Unable to load import history.');
+      setPackages(payload.packages ?? []);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : 'Unable to load import history.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { void loadPackages(); }, [loadPackages]);
+
+  async function uploadPackage() {
+    if (!file) {
+      setError('Choose a vendor ZIP package first.');
+      return;
+    }
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+      setError('Only ZIP packages are accepted. Do not upload PDFs or extraction JSON files separately.');
+      return;
+    }
+    if (file.size > 100 * 1024 * 1024) {
+      setError('The ZIP package must be 100 MB or smaller.');
+      return;
+    }
+
+    const client = createSupabaseBrowserClient();
+    if (!client) {
+      setError('Supabase browser configuration is missing.');
+      return;
+    }
+
+    setBusy(true);
+    setError('');
+    setSuccess(null);
+    let storagePath = '';
+    try {
+      const { data: { user }, error: userError } = await client.auth.getUser();
+      if (userError || !user) throw new Error('Your admin session has expired. Sign in again.');
+      const nonce = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}`;
+      storagePath = `packages/${user.id}/${Date.now()}-${nonce}.zip`;
+
+      const { error: storageError } = await client.storage.from('source-pdfs').upload(storagePath, file, {
+        contentType: 'application/zip',
+        cacheControl: '3600',
+        upsert: false,
+      });
+      if (storageError) throw new Error(`Private storage upload failed: ${storageError.message}. Apply the JSON import migration first.`);
+
+      const response = await fetch('/api/imports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ storagePath }),
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        await client.storage.from('source-pdfs').remove([storagePath]);
+        storagePath = '';
+        throw new Error(payload.error ?? 'Package validation failed.');
+      }
+      setSuccess(payload as UploadSuccess);
+      setFile(null);
+      const input = document.getElementById('package-file') as HTMLInputElement | null;
+      if (input) input.value = '';
+      await loadPackages();
+    } catch (uploadError) {
+      if (storagePath) await client.storage.from('source-pdfs').remove([storagePath]);
+      setError(uploadError instanceof Error ? uploadError.message : 'Unable to upload JSON package.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return <>
+    <div className="admin-page-heading">
+      <div>
+        <div className="admin-eyebrow">Vendor data intake · Schema v1.0.0</div>
+        <h1>JSON Import Centre</h1>
+        <p>Upload a consolidated NTA paper package. CrackJRF validates it and places every question in private staging.</p>
+      </div>
+      <span className="admin-tag blue"><FileJson2 size={12} style={{ marginRight: 5 }} /> ZIP · Max 100 MB</span>
+    </div>
+
+    <div className="admin-grid import-centre-grid">
+      <section className="admin-panel">
+        <div className="admin-panel-title">Upload provider package</div>
+        <div className="admin-panel-sub">One ZIP per paper, year, session, shift and re-examination event.</div>
+        <div className="drop-zone">
+          <Archive size={29} />
+          <h3>{file ? file.name : 'Choose a CrackJRF JSON package'}</h3>
+          <p>ZIP must contain manifest, common question data, English data, QA report, checksums and assets folder.</p>
+          <label className="admin-button secondary" style={{ cursor: 'pointer' }}>
+            <FileUp size={14} /> Choose ZIP
+            <input id="package-file" type="file" accept=".zip,application/zip,application/x-zip-compressed" hidden onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setFile(event.target.files?.[0] ?? null); setError(''); setSuccess(null); }} />
+          </label>
+          {file && <div style={{ marginTop: 12, fontSize: 10, color: '#16865d' }}>{(file.size / 1024 / 1024).toFixed(2)} MB selected</div>}
+        </div>
+        <button className="admin-button" style={{ marginTop: 16 }} onClick={uploadPackage} disabled={busy || !file}>
+          <ShieldCheck size={14} /> {busy ? 'Uploading and validating…' : 'Upload and validate package'}
+        </button>
+        {busy && <div className="admin-callout">The ZIP is uploaded directly to private Supabase Storage. The Admin server then validates its structure, question sequence, language pairing, source references, checksums and media files. No PDF OCR is run.</div>}
+        {success && <div className="admin-callout" style={{ background: '#edf9f2', borderColor: '#d7efdf', color: '#28704d' }}>
+          <CheckCircle2 size={14} style={{ verticalAlign: 'middle', marginRight: 6 }} />
+          <b>{success.packageId}</b> validated and staged: {success.questionCount} question(s).
+          <div style={{ marginTop: 8 }}><Link className="admin-button success" href={`/imports/${success.importPackageId}`}>Open staged package</Link></div>
+          {success.warnings.map((warning) => <div key={warning} style={{ marginTop: 6 }}>• {warning}</div>)}
+        </div>}
+        {error && <div className="admin-callout" style={{ background: '#fff4ed', borderColor: '#f4ddd0', color: '#9a4c2b' }}><CircleAlert size={14} style={{ verticalAlign: 'middle', marginRight: 6 }} />{error}</div>}
+      </section>
+
+      <aside className="admin-panel">
+        <div className="admin-panel-title">What the importer checks</div>
+        <div className="admin-panel-sub">A structurally valid package is not an academically approved question bank.</div>
+        {[
+          ['Package integrity', 'Required files, JSON syntax, checksums and media hashes.'],
+          ['Question identity', 'Stable base IDs, E/H language codes and shared option IDs.'],
+          ['Official sequence', 'Sequential order_index and original NTA question number preserved.'],
+          ['Sources and answers', 'Source references must exist; answer claims remain unverified.'],
+          ['Taxonomy separation', 'Provider syllabus tags and keywords are rejected. CrackJRF assigns them.'],
+          ['Private staging', 'Nothing is converted into a student-visible question during import.'],
+        ].map(([title, description], index) => <div className="admin-row" key={title}>
+          <div className="admin-row-icon">{index + 1}</div>
+          <div className="admin-row-main"><b>{title}</b><small>{description}</small></div>
+        </div>)}
+        <div className="admin-callout">The provider performs PDF extraction, source matching and NTA-order consolidation. This Admin application does not run OCR or attempt to match solved papers.</div>
+      </aside>
+    </div>
+
+    <section className="admin-panel" style={{ marginTop: 16 }}>
+      <div className="admin-panel-title">Recent imported packages</div>
+      <div className="admin-panel-sub">Imported content remains in staging until content review, taxonomy assignment, answer verification and Super Admin approval are complete.</div>
+      <div className="admin-filter-row" style={{ justifyContent: 'flex-end' }}>
+        <button className="admin-button secondary" onClick={loadPackages} disabled={loading}><RefreshCw size={13} /> Refresh</button>
+      </div>
+      {loading ? <p className="import-empty">Loading package history…</p> : packages.length === 0 ? <div className="admin-callout">No JSON packages imported yet. Use the uploader above to import your first provider delivery.</div> :
+        <div className="import-package-list">
+          {packages.map((item) => <article className="import-package-row" key={item.id}>
+            <div className="import-package-icon"><FileJson2 size={19} /></div>
+            <div className="import-package-main">
+              <b>{item.package_id}</b>
+              <small>{item.subjects?.name ?? 'Subject'} · Paper {item.paper_number} · {item.exam_year} {item.exam_session} · {item.shift ?? 'Shift not set'}</small>
+              <small>{item.total_questions} questions · {item.languages.map((language) => language.toUpperCase()).join(' + ')} · {new Date(item.created_at).toLocaleString()}</small>
+            </div>
+            <div className="import-package-status">
+              <span className={`admin-tag ${item.validation_status === 'valid' ? 'green' : 'amber'}`}>{item.validation_status.replaceAll('_', ' ')}</span>
+              <small>{item.status.replaceAll('_', ' ')}</small>
+            </div>
+            <Link className="admin-button secondary" href={`/imports/${item.id}`}>Review package</Link>
+          </article>)}
+        </div>}
+    </section>
+  </>;
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crackjrf.example/schemas/questions-common.schema.json",
+  "title": "CrackJRF Language-independent Question Data",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "package_id", "questions"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"}, "package_id": {"type": "string"},
+    "questions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/question"}}
+  },
+  "$defs": {
+    "question": {
+      "type": "object", "additionalProperties": false,
+      "required": ["base_question_id", "language_question_codes", "order_index", "original_question_number", "question_type", "options", "answer", "source_references", "media_asset_ids"],
+      "properties": {
+        "base_question_id": {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]{4,79}$"},
+        "language_question_codes": {"type": "object", "additionalProperties": false, "required": ["en"], "properties": {"en": {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]*E$"}, "hi": {"type": ["string", "null"], "pattern": "^[A-Z0-9][A-Z0-9._-]*H$"}}},
+        "order_index": {"type": "integer", "minimum": 1},
+        "original_question_number": {"type": "string", "minLength": 1},
+        "nta_question_id": {"type": ["string", "null"]},
+        "question_type": {"enum": ["single_mcq", "multiple_correct_mcq", "comprehension_mcq", "table_mcq", "image_mcq", "map_mcq", "matching_mcq", "other_mcq"]},
+        "options": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "#/$defs/option"}},
+        "answer": {"$ref": "#/$defs/answer"},
+        "source_references": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceReference"}},
+        "media_asset_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "shared_stimulus_id": {"type": ["string", "null"]},
+        "provider_notes": {"type": ["string", "null"]}
+      }
+    },
+    "option": {
+      "type": "object", "additionalProperties": false,
+      "required": ["option_id", "key"],
+      "properties": {"option_id": {"type": "string", "minLength": 1}, "key": {"enum": ["A", "B", "C", "D"]}}
+    },
+    "answer": {
+      "type": "object", "additionalProperties": false,
+      "required": ["resolution", "proposed_correct_option_keys", "provider_status", "grading_rule", "evidence"],
+      "properties": {
+        "resolution": {"enum": ["single_correct", "multiple_correct", "all_options_correct", "dropped", "unknown"]},
+        "proposed_correct_option_keys": {"type": "array", "uniqueItems": true, "items": {"enum": ["A", "B", "C", "D"]}},
+        "provider_status": {"enum": ["provided", "unavailable", "ambiguous"]},
+        "grading_rule": {"enum": ["normal", "all_candidates_credit", "dropped_credit", "no_score"]},
+        "evidence": {"type": "array", "items": {"$ref": "#/$defs/answerEvidence"}},
+        "notes": {"type": ["string", "null"]}
+      }
+    },
+    "answerEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_document_id", "source_role", "source_question_number", "page_number", "claim_type"],
+      "properties": {
+        "source_document_id": {"type": "string"},
+        "source_role": {"enum": ["official_provisional_answer_key", "official_final_answer_key", "official_revised_answer_key", "private_solved_paper", "supplementary_reference"]},
+        "source_question_number": {"type": ["string", "null"]},
+        "page_number": {"type": ["integer", "null"], "minimum": 1},
+        "claim_type": {"enum": ["official_published", "private_solution_claim", "supporting_reference"]},
+        "notes": {"type": ["string", "null"]}
+      }
+    },
+    "sourceReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_document_id", "source_role", "page_number", "source_question_number", "match_status"],
+      "properties": {
+        "source_document_id": {"type": "string"},
+        "source_role": {"enum": ["official_question_paper", "official_provisional_answer_key", "official_final_answer_key", "official_revised_answer_key", "private_solved_paper", "supplementary_reference"]},
+        "page_number": {"type": ["integer", "null"], "minimum": 1},
+        "source_question_number": {"type": ["string", "null"]},
+        "match_status": {"enum": ["provider_matched", "unresolved"]},
+        "notes": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

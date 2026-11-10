@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "UGCNET-GEO-2024-JUNE-P2-S1",
+  "questions": [
+    {
+      "base_question_id": "GEO-2024-00001",
+      "language_question_codes": {
+        "en": "GEO-2024-00001E",
+        "hi": null
+      },
+      "order_index": 1,
+      "original_question_number": "17",
+      "nta_question_id": null,
+      "question_type": "single_mcq",
+      "options": [
+        {"option_id": "GEO-2024-00001-A", "key": "A"},
+        {"option_id": "GEO-2024-00001-B", "key": "B"},
+        {"option_id": "GEO-2024-00001-C", "key": "C"},
+        {"option_id": "GEO-2024-00001-D", "key": "D"}
+      ],
+      "answer": {
+        "resolution": "single_correct",
+        "proposed_correct_option_keys": ["B"],
+        "provider_status": "provided",
+        "grading_rule": "normal",
+        "evidence": [
+          {
+            "source_document_id": "SRC-SOLVED-001",
+            "source_role": "private_solved_paper",
+            "source_question_number": "24",
+            "page_number": 11,
+            "claim_type": "private_solution_claim",
+            "notes": "Provider matched this solved-paper item to official NTA question 17. CrackJRF review remains required."
+          }
+        ],
+        "notes": "This answer is a provider-supplied claim and is not verified by CrackJRF."
+      },
+      "source_references": [
+        {
+          "source_document_id": "SRC-NTA-001",
+          "source_role": "official_question_paper",
+          "page_number": 12,
+          "source_question_number": "17",
+          "match_status": "provider_matched",
+          "notes": null
+        },
+        {
+          "source_document_id": "SRC-SOLVED-001",
+          "source_role": "private_solved_paper",
+          "page_number": 11,
+          "source_question_number": "24",
+          "match_status": "provider_matched",
+          "notes": "Question order differs in the supporting solved paper."
+        }
+      ],
+      "media_asset_ids": [],
+      "shared_stimulus_id": null,
+      "provider_notes": null
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crackjrf.example/schemas/qa-report.schema.json",
+  "title": "CrackJRF Provider QA Report",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "package_id", "official_question_count", "delivered_question_count", "english_count", "four_option_complete_count", "question_order_preserved", "exceptions"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"}, "package_id": {"type": "string"},
+    "official_question_count": {"type": "integer", "minimum": 0}, "delivered_question_count": {"type": "integer", "minimum": 0},
+    "english_count": {"type": "integer", "minimum": 0}, "hindi_count": {"type": "integer", "minimum": 0},
+    "four_option_complete_count": {"type": "integer", "minimum": 0}, "answer_available_count": {"type": "integer", "minimum": 0},
+    "explanation_available_count": {"type": "integer", "minimum": 0}, "question_order_preserved": {"const": true},
+    "unmatched_answer_count": {"type": "integer", "minimum": 0}, "missing_asset_count": {"type": "integer", "minimum": 0},
+    "exceptions": {"type": "array", "items": {"type": "object", "required": ["base_question_id", "issue"], "properties": {"base_question_id": {"type": "string"}, "issue": {"type": "string"}, "notes": {"type": ["string", "null"]}}}},
+    "provider_notes": {"type": ["string", "null"]}
+  }
+}

@@ -5,22 +5,17 @@ Monorepo starter for a multi-subject UGC NET preparation product, with Geography
 ## What is included
 
 - `apps/student`: student-facing Next.js app (PYQ browsing, answer reveal, bookmarks, practice/full mock test flows, personal performance, static PYQ analytics and authentication).
-- `apps/admin`: separate private Next.js admin app (dashboard, PDF registration/upload, extraction staging queue, combined Paper I + Paper II source assignment, three-panel review workspace, rich explanation editor, question table, syllabus viewer, roles/settings).
+- `apps/admin`: separate private Next.js admin app (dashboard, vendor JSON Import Centre, package staging review, three-panel content review workspace, rich explanation editor, question bank, syllabus viewer, roles/settings).
 - `packages/shared`: shared TypeScript models, test blueprints, demo data and expanded Geography/Paper I syllabus JSON.
 - `supabase/migrations`: PostgreSQL schema, row-level security, private storage buckets, controlled answer reveal RPC, admin roles and test data tables.
-- `scripts/extract_pdf.py`: page-aware PDF text extraction and OCR into a review-only JSON format.
-- `scripts/match_solved_papers.py`: content-based candidate matching between separate official and solved-paper extractions; never auto-verifies answers.
 - `scripts/seed-syllabus.ts`: seeds subjects, syllabus versions/nodes and initial test blueprints.
-- `scripts/import-extraction.ts`: uploads OCR extraction JSON into the private database staging tables; candidates remain unverified.
 
-The repository is an implementation foundation with Supabase-backed API paths where credentials are configured. It does not contain the real 2014–2026 question dataset, and the demo questions are synthetic. PDF OCR/extraction remains a local operator-run process; extracted candidates must be checked and edited in the Admin Panel. Dependency installation, a production build, SQL execution and end-to-end Supabase verification must be completed in your environment before launch.
+The repository is an implementation foundation with Supabase-backed API paths where credentials are configured. It does not contain the real 2014–2026 question dataset, and the demo questions are synthetic. The approved ingestion boundary is vendor-delivered consolidated JSON: CrackJRF does not perform PDF OCR, segmentation or solved-paper matching. Imported records are structurally validated and remain private until content review, syllabus classification, answer verification and Super Admin approval. Dependency installation, a production build, SQL execution and end-to-end Supabase verification must be completed in your environment before launch.
 
 ## Requirements
 
 - Node.js 20.9 or later (Node 22 recommended).
 - npm 10+.
-- Python 3.10+ for PDF processing.
-- Tesseract OCR with English and Hindi language data (`eng`, `hin`). The script will fall back to English if the requested language pack is unavailable.
 - A Supabase project for shared auth, PostgreSQL and private file storage.
 
 ## 1. Install dependencies
@@ -29,16 +24,6 @@ From the repository root:
 
 ```bash
 npm install
-```
-
-For PDF processing:
-
-```bash
-python -m venv .venv
-# macOS/Linux
-source .venv/bin/activate
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-pip install -r scripts/requirements.txt
 ```
 
 ## 2. Configure Supabase
@@ -68,7 +53,7 @@ SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY
 
 ### Apply the database migration
 
-Run `supabase/migrations/0001_initial_schema.sql` in the Supabase SQL Editor, or use the Supabase CLI from a linked local project. It creates the schema, RLS policies, `source-pdfs` and `question-assets` private buckets, and the `get_practice_answer` RPC.
+Run `supabase/migrations/0001_initial_schema.sql` in the Supabase SQL Editor first. Then run `supabase/migrations/0002_json_import_packages.sql`. The second migration adds the private vendor-package staging tables, E/H language question codes, stable provider option IDs, language-specific explanation storage, the relevant RLS policies and ZIP support for the private `source-pdfs` bucket.
 
 Then seed the subject and syllabus rows:
 
@@ -121,71 +106,34 @@ Admin app: <http://localhost:3001>
 
 Without Supabase environment values, both apps open in clearly labelled local preview mode. Admin changes then remain local in the browser and uploads/publishing are not persisted.
 
-## 4. PDF ingestion workflow
+## 4. Vendor JSON package ingestion workflow
 
-The official NTA question paper is the primary source for question wording, options, original question number, NTA question ID when present, language versions and paper metadata. Private solved PDFs are supporting evidence only. Never match by source question number or page position alone.
+The provider delivers one ZIP package per examination paper, year, session, shift and re-examination event. The package is the consolidated result of the provider's PDF extraction, source matching and NTA-order preservation. CrackJRF does not run OCR, segment PDF pages or match solved-paper questions.
 
-Run the extractor on an official paper:
+The provider-facing standard and sample package are versioned in [`docs/vendor-import-standard-v1.0.0/`](docs/vendor-import-standard-v1.0.0/). The separate distribution bundle is `CrackJRF_Import_Contract_v1.0.zip`. The ZIP must contain:
 
-```bash
-python scripts/extract_pdf.py \
-  /path/to/official-paper.pdf \
-  --out imports/ocr \
-  --source-type nta_official \
-  --subject-code 80 \
-  --paper 0 \
-  --year 2025 \
-  --session June \
-  --lang eng+hin
-```
+- `manifest.json`
+- `questions_common.json`
+- `questions_en.json` (mandatory) and `questions_hi.json` (optional)
+- `qa_report.json`, `checksums.sha256` and `assets/asset_manifest.json`
+- Original high-resolution question crops, maps, diagrams and tables under `assets/` when referenced
 
-Use `--paper 0` for a combined official PDF containing both Paper I and Paper II. The extractor makes a page-level paper assignment from exact section headings when it can; this is a heuristic, not a trusted classification. Verify or correct every staging item in Admin → Review before creating the canonical question. For a single-paper file, use `--paper 1` or `--paper 2`.
+Apply migration `0002_json_import_packages.sql` before using this feature. In Admin → JSON Import Centre, choose the ZIP file. The browser uploads it directly to the private Supabase Storage bucket; the Admin API validates the archive and registers the metadata and question records in private staging. The API checks package structure and IDs, question sequence, E/H pairing, shared A/B/C/D option IDs, source references, QA counts, checksums and asset hashes. It does not inspect or process source PDFs.
 
-Run it separately on the private solved paper:
+A successful structural validation is not an academic verification. Imported answers and explanations remain provider claims. CrackJRF must separately assign syllabus units, sections, topics, subtopics and keywords, review each language, verify answer evidence and approve publication. A package with a provider QA exception or unresolved match remains visibly flagged for manual review. Nothing is automatically published.
 
-```bash
-python scripts/extract_pdf.py \
-  /path/to/private-solved-paper.pdf \
-  --out imports/ocr \
-  --source-type private_solution \
-  --subject-code 80 \
-  --paper 2 \
-  --year 2025 \
-  --session June \
-  --lang eng+hin
-```
-
-Suggest possible content matches:
-
-```bash
-python scripts/match_solved_papers.py \
-  imports/ocr/official-paper.extraction.json \
-  imports/ocr/private-solved-paper.extraction.json \
-  --out imports/ocr/match-suggestions.json
-```
-
-After the upload endpoint returns an `importJobId`, run OCR against the same source PDF locally. Then import the extraction JSON into the staging queue:
-
-```bash
-npm run import:extraction -- <IMPORT_JOB_UUID> imports/ocr/official-paper.extraction.json
-```
-
-Open Admin → Extraction Queue to inspect the staged OCR text. Selecting a candidate opens the review workspace. For combined PDFs, assign the candidate to Paper I or Paper II before creating/loading its canonical question. English and Hindi source candidates with the same exam appearance are linked to one platform question ID. A source page preview is generated with a short-lived signed URL for authorized administrators. The editor must clean the extracted stem/options, add syllabus classifications, verify the answer separately and save/submit the draft.
-
-The extractor deliberately creates page-level candidate records where reliable question boundaries cannot be established. In the supplied 29 June 2025 Geography paper, the PDF text layer exposes metadata but key question statements are embedded in rendered page images. OCR and manual visual review are therefore required. All candidates must be segmented and checked against the original page images. The match tool only creates ranked suggestions; it does not verify answers, transfer answer keys or publish questions.
-
-The web Admin PDF upload endpoint registers the private PDF in Storage and creates an `import_jobs` row. The local OCR scripts are run by an operator; a hosted background worker/queue is a later deployment task.
+The provider must not include internal database UUIDs or syllabus classification/keyword fields. For the complete identity, media and answer-evidence rules, follow the versioned import contract rather than inventing provider-specific fields.
 
 ## 5. Question identity and content rules
 
 - Use platform-owned canonical IDs (e.g. `GEO-Q-000001`, `P1-Q-000001`).
 - Preserve NTA's question ID as optional source metadata, never as the primary key.
 - Preserve each exam appearance separately (year, June/December/other, re-exam/special, paper, date, shift and original question number).
-- English and Hindi are translations of one question, not separate question records.
-- Ignore opaque NTA option IDs. Use local stable option keys A/B/C/D.
+- English and Hindi are language variants of one canonical logical question, not separate question records. Preserve the external language-specific question codes ending in `E` and `H` on the language records.
+- Provider option IDs remain stable across language files and are mapped to platform-owned option UUIDs; A/B/C/D remain the visible option keys.
 - A question can map to multiple units/topics, but overall unique-question totals and test selection must deduplicate by canonical question ID.
 - Shared passages, tables and stimuli use question groups so related sub-questions can point to the same stimulus.
-- Keep official and private source items separate. Match on question text and option content; reordered options do not change the meaning of an answer.
+- Keep official and private source records separate. Preserve the provider's question-match provenance; a provider match is not answer verification and CrackJRF does not independently match solved-paper content.
 - An answer claim from a private source is not verified until reviewed. Keep disputed answer evidence and references.
 - Do not publish a question with a pending or disputed answer into a scored test. Handle dropped/multiple-correct questions with explicit grading rules.
 - Historical papers retain their actual question counts/patterns. New complete mock blueprints use 50 Paper I + 100 Paper II questions over 180 minutes. Geography-only 100-question/120-minute mode is a platform practice configuration, not an official separate Paper II time allotment.
@@ -205,8 +153,8 @@ The web Admin PDF upload endpoint registers the private PDF in Storage and creat
 ### Admin (`localhost:3001`)
 
 - `/` – admin dashboard
-- `/imports` – PDF upload and source metadata
-- `/staging` – database-backed extracted candidate queue
+- `/imports` – vendor ZIP upload, validation and import history
+- `/imports/[packageId]` – ordered question preview in private staging
 - `/review` – three-panel review/editor workspace with rich explanation editor
 - `/questions` – question bank management shell
 - `/syllabus` – Geography and Paper I taxonomy viewer
@@ -225,17 +173,17 @@ This validates structural fields only. It does not verify source authenticity, t
 
 Before real candidates use the platform:
 
-1. Complete and test the PDF worker queue and question-boundary segmentation, including bilingual page pairing, tables, comprehension stimuli, maps and diagrams.
+1. Complete canonical-question promotion from package staging, including safe retries, provenance links and language-specific external question codes.
 2. Verify question revision snapshots and approval actions with real Supabase accounts and RLS.
 3. Test the student CBT client against the server-authoritative `start_test_attempt`, response-save, `submit_test_attempt` and post-submit review RPCs. Never let the browser submit or read test answer keys.
 4. Test the student PYQ reveal interface against the `get_practice_answer` RPC and active-test access checks.
 5. Replace remaining demo data with reviewed, licensed content; validate student library and dashboard queries.
-6. Implement stronger duplicate/near-duplicate matching, bilingual pairing, robust failure recovery and a hosted worker queue.
-7. Add/verify an external OCR job runner for large batches; the current workflow runs extraction locally and imports the JSON to staging.
+6. Complete the bilingual content review and explanation workflow without overwriting independently edited Hindi.
+7. Add import correction/supersession tools, resilient batch recovery and a full audit trail for large vendor deliveries.
 8. Run security review, RLS tests, accessibility checks, load tests and production backups.
 
 This repository is a runnable foundation and first-pass interface, not a claim that the entire production product or the 2014–2026 dataset is already complete.
 
 ## 9. Pilot validation
 
-See [`docs/PILOT_VALIDATION.md`](docs/PILOT_VALIDATION.md) for the combined-paper PDF smoke-test results and explicit validation limits. The sample page ranges demonstrated the Paper I / Geography page assignment, but no full 129-page extraction or question publication was performed.
+The older [`docs/PILOT_VALIDATION.md`](docs/PILOT_VALIDATION.md) document records a historical PDF workflow test. That workflow is retired and is not part of the current vendor JSON ingestion pipeline.

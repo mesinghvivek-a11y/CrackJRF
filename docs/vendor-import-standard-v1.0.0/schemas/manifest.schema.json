@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crackjrf.example/schemas/manifest.schema.json",
+  "title": "CrackJRF Import Package Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_name", "schema_version", "package_id", "generated_at", "exam", "question_sequence", "languages", "files", "source_documents", "assets", "delivery_status"],
+  "properties": {
+    "schema_name": {"const": "crackjrf-question-package"},
+    "schema_version": {"const": "1.0.0"},
+    "package_id": {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9_-]{5,90}$"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "provider": {"type": "object", "additionalProperties": false, "properties": {"name": {"type": "string"}, "delivery_reference": {"type": ["string", "null"]}, "contact_reference": {"type": ["string", "null"]}}},
+    "exam": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "conducting_body", "subject_name", "subject_code", "paper", "year", "session", "is_re_exam", "shift"],
+      "properties": {
+        "name": {"const": "UGC NET"}, "conducting_body": {"const": "NTA"},
+        "subject_name": {"type": "string", "minLength": 1}, "subject_code": {"type": "string", "minLength": 1},
+        "paper": {"enum": ["I", "II"]}, "year": {"type": "integer", "minimum": 2014, "maximum": 2100},
+        "session": {"enum": ["June", "December", "Other"]}, "session_label": {"type": ["string", "null"]},
+        "is_re_exam": {"type": "boolean"}, "re_exam_reference": {"type": ["string", "null"]},
+        "exam_date": {"type": ["string", "null"], "format": "date"}, "shift": {"type": ["string", "integer", "null"]}
+      }
+    },
+    "question_sequence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source", "order_preserved", "total_questions", "order_start"],
+      "properties": {"source": {"const": "official_nta_question_paper"}, "order_preserved": {"const": true}, "total_questions": {"type": "integer", "minimum": 1}, "order_start": {"const": 1}, "notes": {"type": ["string", "null"]}}
+    },
+    "languages": {
+      "type": "object", "additionalProperties": false,
+      "required": ["primary", "available"],
+      "properties": {"primary": {"const": "en"}, "available": {"type": "array", "uniqueItems": true, "minItems": 1, "items": {"enum": ["en", "hi"]}}}
+    },
+    "files": {
+      "type": "object", "additionalProperties": false,
+      "required": ["common", "en", "hi", "qa_report", "asset_manifest"],
+      "properties": {"common": {"const": "questions_common.json"}, "en": {"const": "questions_en.json"}, "hi": {"type": ["string", "null"]}, "qa_report": {"const": "qa_report.json"}, "asset_manifest": {"const": "assets/asset_manifest.json"}}
+    },
+    "source_documents": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceDocument"}},
+    "assets": {"type": "object", "additionalProperties": false, "required": ["directory", "inventory"], "properties": {"directory": {"const": "assets/"}, "inventory": {"const": "assets/asset_manifest.json"}}},
+    "delivery_status": {"enum": ["complete", "partial"]},
+    "delivery_notes": {"type": ["string", "null"]}
+  },
+  "$defs": {
+    "sourceDocument": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_document_id", "role", "filename", "sha256"],
+      "properties": {
+        "source_document_id": {"type": "string", "minLength": 1},
+        "role": {"enum": ["official_question_paper", "official_provisional_answer_key", "official_final_answer_key", "official_revised_answer_key", "private_solved_paper", "supplementary_reference"]},
+        "filename": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
+        "language": {"enum": ["en", "hi", "bilingual", "unknown"]}, "notes": {"type": ["string", "null"]}
+      }
+    }
+  }
+}
