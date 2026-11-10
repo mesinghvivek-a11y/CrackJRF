@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '../../../../../lib/server-supabase';
+import { createServerSupabaseClient } from '../../../../lib/server-supabase';
 import geography from '@ugcnet/shared/syllabus/geography';
 import { flattenSyllabus } from '@ugcnet/shared';
 export const runtime='nodejs';
