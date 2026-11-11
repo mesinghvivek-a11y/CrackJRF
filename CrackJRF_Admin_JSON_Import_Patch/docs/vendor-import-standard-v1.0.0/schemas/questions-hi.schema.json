@@ -1,0 +1,301 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crackjrf.example/schemas/questions-hi.schema.json",
+  "title": "CrackJRF Hindi Question Content",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "language",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "package_id": {
+      "type": "string"
+    },
+    "language": {
+      "const": "hi"
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/localizedQuestion"
+      }
+    }
+  },
+  "$defs": {
+    "localizedQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_question_id",
+        "language_question_code",
+        "question_blocks",
+        "options",
+        "explanation",
+        "question_crop_asset_id",
+        "media_asset_ids"
+      ],
+      "properties": {
+        "base_question_id": {
+          "type": "string"
+        },
+        "language_question_code": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9._-]*H$"
+        },
+        "instructions_blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contentBlock"
+          }
+        },
+        "question_blocks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/contentBlock"
+          }
+        },
+        "options": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "$ref": "#/$defs/localizedOption"
+          }
+        },
+        "explanation": {
+          "$ref": "#/$defs/explanation"
+        },
+        "question_crop_asset_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "media_asset_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "content_review_notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "localizedOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "option_id",
+        "key",
+        "content_blocks"
+      ],
+      "properties": {
+        "option_id": {
+          "type": "string"
+        },
+        "key": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        "content_blocks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/contentBlock"
+          }
+        }
+      }
+    },
+    "explanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "overview",
+        "detailed_blocks",
+        "option_explanations",
+        "references"
+      ],
+      "properties": {
+        "overview": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "detailed_blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contentBlock"
+          }
+        },
+        "option_explanations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/optionExplanation"
+          }
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        }
+      }
+    },
+    "optionExplanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "option_key",
+        "content_blocks"
+      ],
+      "properties": {
+        "option_key": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        "content_blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contentBlock"
+          }
+        }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reference_type",
+        "title"
+      ],
+      "properties": {
+        "reference_type": {
+          "enum": [
+            "book",
+            "article",
+            "official_document",
+            "website",
+            "other"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "author": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "publisher": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "edition": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "year": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        }
+      }
+    },
+    "contentBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "paragraph",
+            "ordered_list",
+            "unordered_list",
+            "table",
+            "image",
+            "equation"
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "asset_id": {
+          "type": "string"
+        },
+        "alt_text": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "latex": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

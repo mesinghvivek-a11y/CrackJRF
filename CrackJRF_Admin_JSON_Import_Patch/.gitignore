@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+.env
+.env.local
+.env.*.local
+!.env.example
+.DS_Store
+*.log
+.pytest_cache
+__pycache__
+.venv
+venv
+imports/raw/
+imports/ocr/
+
+imports/vendor-packages/

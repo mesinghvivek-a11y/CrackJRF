@@ -1,0 +1,47 @@
+CRACKJRF FAST ADMIN PATCH — APPLY IN CODESPACES
+
+1. Before applying, open the CrackJRF Codespace terminal at the repository root.
+2. Run `pwd` and confirm the folder contains package.json, apps/, packages/ and supabase/.
+3. Run `git status --short`. Commit or preserve any unrelated edits first. Do not use `git reset --hard` or `git clean`.
+4. Upload this ZIP into the repository root, then extract it:
+
+   unzip -o CrackJRF_Fast_Admin_Excel_Patch_v1.zip -d .
+
+5. From the repository root, apply the patch using the provided backup script:
+
+   bash CrackJRF_Fast_Admin_Excel_Patch_v1/apply_patch.sh
+
+   The script backs up any overwritten files into /tmp before copying. It only removes the exact paths listed in REMOVED_FILES.txt.
+
+6. Inspect the resulting changes:
+
+   git status --short
+   git diff --check
+
+7. Open and review:
+
+   supabase/migrations/0004_trusted_excel_publish_and_fast_editor.sql
+
+8. In Supabase Dashboard → SQL Editor, select the correct CrackJRF project, paste the COMPLETE migration 0004 file and run it ONCE. Migrations 0001, 0002 and 0003 must not be rerun. If 0004 errors, stop and share the exact error; do not rerun blindly.
+
+9. Build both apps from repository root:
+
+   npm run build:admin
+   npm run build:student
+
+   Both must pass before commit/deploy.
+
+10. Check status and stage only the intended files. Do not use `git add .` until you have inspected all untracked ZIPs/temp artifacts.
+
+11. Push to main only after successful builds and migration. Verify both Vercel deployments.
+
+12. Test with a small controlled workbook. The supplied Excel template is:
+
+   public/templates/CrackJRF_Question_Import_Template_v3.xlsx
+
+IMPORTANT:
+- This patch has not been deployed by ChatGPT.
+- Do not share .env.local, Supabase service-role keys, Gemini/API keys or passwords.
+- Import and Publish is Super Admin-only in this implementation.
+- A trusted import immediately publishes all rows only after file/row validation; it does not ask for a second human answer verification.
+- Editor Save Draft and Publish are separate actions. Save Draft does not change the live published version. Publish updates the current version only after the database RPC succeeds.

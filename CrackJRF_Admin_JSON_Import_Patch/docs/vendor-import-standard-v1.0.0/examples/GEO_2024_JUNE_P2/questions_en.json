@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "UGCNET-GEO-2024-JUNE-P2-S1",
+  "language": "en",
+  "questions": [
+    {
+      "base_question_id": "GEO-2024-00001",
+      "language_question_code": "GEO-2024-00001E",
+      "instructions_blocks": [],
+      "question_blocks": [
+        {"type": "paragraph", "text": "Which of the following is associated with upper-air atmospheric circulation?"}
+      ],
+      "options": [
+        {"option_id": "GEO-2024-00001-A", "key": "A", "content_blocks": [{"type": "paragraph", "text": "Ocean tides"}]},
+        {"option_id": "GEO-2024-00001-B", "key": "B", "content_blocks": [{"type": "paragraph", "text": "Jet streams"}]},
+        {"option_id": "GEO-2024-00001-C", "key": "C", "content_blocks": [{"type": "paragraph", "text": "Continental shelves"}]},
+        {"option_id": "GEO-2024-00001-D", "key": "D", "content_blocks": [{"type": "paragraph", "text": "Ocean salinity"}]}
+      ],
+      "explanation": {
+        "overview": "Illustrative explanation only.",
+        "detailed_blocks": [{"type": "paragraph", "text": "Jet streams are narrow bands of strong winds in the upper troposphere and near the tropopause."}],
+        "option_explanations": [
+          {"option_key": "A", "content_blocks": [{"type": "paragraph", "text": "This concerns oceanographic processes."}]},
+          {"option_key": "B", "content_blocks": [{"type": "paragraph", "text": "This is the proposed correct option in this illustrative example."}]},
+          {"option_key": "C", "content_blocks": [{"type": "paragraph", "text": "This is an ocean-floor feature."}]},
+          {"option_key": "D", "content_blocks": [{"type": "paragraph", "text": "This is a property of seawater."}]}
+        ],
+        "references": []
+      },
+      "question_crop_asset_id": null,
+      "media_asset_ids": [],
+      "content_review_notes": "Illustrative text. Not an actual NTA question."
+    }
+  ]
+}

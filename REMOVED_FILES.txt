@@ -1,0 +1,5 @@
+Delete these files from the existing repository; the old local PDF/OCR pipeline is retired:
+scripts/extract_pdf.py
+scripts/match_solved_papers.py
+scripts/import-extraction.ts
+scripts/requirements.txt

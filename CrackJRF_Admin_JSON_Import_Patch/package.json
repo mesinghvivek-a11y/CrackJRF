@@ -1,0 +1,24 @@
+{
+  "name": "ugc-net-platform",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:student": "npm run dev -w @ugcnet/student",
+    "dev:admin": "npm run dev -w @ugcnet/admin",
+    "build:student": "npm run build -w @ugcnet/student",
+    "build:admin": "npm run build -w @ugcnet/admin",
+    "typecheck": "npm run typecheck -w @ugcnet/student && npm run typecheck -w @ugcnet/admin && npm run typecheck -w @ugcnet/shared",
+    "seed:syllabus": "tsx scripts/seed-syllabus.ts",
+    "validate:question": "node scripts/validate-question.mjs"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "dotenv": "^16.4.7"
+  }
+}

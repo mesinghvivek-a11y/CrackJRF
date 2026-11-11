@@ -1,0 +1,47 @@
+CrackJRF Admin JSON Import patch
+================================
+
+Built from the uploaded CrackJRF repository snapshot at commit:
+6ed9d0c3f3a96c8adab88639ba0bc30b24e9936a
+
+This patch changes the Admin application only. It replaces the PDF/OCR import entry point with a vendor ZIP package uploader, structural validation and private staging preview. It does not yet promote staged package rows into canonical Question Bank records or implement the subsequent per-question editing/classification/answer-review workflow.
+
+Apply from the repository root in GitHub Codespaces:
+
+1. Upload this ZIP to the repository root.
+2. Run:
+
+   unzip -o CrackJRF_Admin_JSON_Import_Patch.zip -d .
+
+3. Remove the retired local PDF/OCR/matching tools:
+
+   rm -f scripts/extract_pdf.py scripts/match_solved_papers.py scripts/import-extraction.ts scripts/requirements.txt
+
+4. In Supabase Dashboard -> SQL Editor, run:
+
+   supabase/migrations/0002_json_import_packages.sql
+
+   Migration 0001 must already have been applied. Do not rerun 0001 on an existing database.
+
+5. Run the Admin production build from the repository root:
+
+   npm run build:admin
+
+   Resolve any build error before committing or deploying.
+
+6. Review, commit and push:
+
+   git status --short
+   git add .
+   git commit -m "Replace PDF imports with vendor JSON package intake"
+   git push origin main
+
+Vercel should deploy the Admin app from the updated main branch. The Student app source was not changed.
+
+IMPORTANT
+---------
+- No service-role/secret key is needed for this uploader. The ZIP uploads directly to the private source-pdfs bucket using the signed-in admin session.
+- Apply migration 0002 before testing the new upload UI. It creates private staging tables and bilingual metadata fields, enables ZIP MIME types, and adds explanation translation storage.
+- The included GEO_2024_JUNE_P2_demo.zip is a one-question structural test package, not real NTA content. It is deliberately marked partial and should only be used to test import/staging.
+- Structural validation does not verify academic correctness, official source authenticity, translations or answer correctness, and it does not publish questions.
+- The full Next.js production build could not be run during patch preparation because the npm registry was unreachable. Changed TypeScript/TSX files passed syntax and targeted strict type checks; English-only, nested-folder and bilingual ZIP tests passed; checksum tampering was rejected.
