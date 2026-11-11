@@ -1,49 +1,477 @@
-"use client";
-import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import geography from "@ugcnet/shared/syllabus/geography";
-import paper1 from "@ugcnet/shared/syllabus/paper1";
-import { RichEditor } from "../../components/rich-editor";
-import { Save, Send, Eye, AlertTriangle, FilePlus2 } from "lucide-react";
+'use client';
 
-type StagingItem = { id:string; paper_number:number|null; source_page_start:number|null; source_question_number:string|null; source_native_question_id:string|null; language:string; extracted_text:string|null; source_documents?:{file_name:string;source_type:string;paper_scope:string;shift:string|null;metadata:any}|null };
-const blankOptions=["","","",""];
-function ReviewContent(){
- const searchParams=useSearchParams();
- const sourceItemId=searchParams.get("sourceItem");
- const existingQuestionCode=searchParams.get("questionCode");
- const [staging,setStaging]=useState<StagingItem|null>(null);
- const [paperNumber,setPaperNumber]=useState<"1"|"2"|"">("");
- const [questionCode,setQuestionCode]=useState("");
- const [pdfUrl,setPdfUrl]=useState<string|null>(null);
- const [sourceMeta,setSourceMeta]=useState({year:2025,session:"June",shift:"Unknown shift",sourcePage:1,originalNumber:"",ntaQuestionId:""});
- const [stem,setStem]=useState("");const [hiStem,setHiStem]=useState("");const [questionType,setQuestionType]=useState("mcq");
- const [options,setOptions]=useState<string[]>(blankOptions);const [hiOptions,setHiOptions]=useState<string[]>(blankOptions);
- const [selectedTopics,setSelectedTopics]=useState<string[]>([]);const [primary,setPrimary]=useState("");
- const [answerKeys,setAnswerKeys]=useState<string[]>([]);const [answerStatus,setAnswerStatus]=useState("pending");
- const [explanation,setExplanation]=useState("");const [latex,setLatex]=useState("");const [optionExplanations,setOptionExplanations]=useState(["","","",""]);
- const [message,setMessage]=useState("");const [busy,setBusy]=useState(false);const [references,setReferences]=useState("");
- const syllabus=paperNumber==="1"?paper1:geography;
- const topics=useMemo(()=>((syllabus as any).units??[]).flatMap((u:any)=>u.sections.flatMap((s:any)=>s.topics.map((t:any)=>({id:t.id,title:t.title,unitId:u.id,unitTitle:u.title,section:s.title})))),[syllabus]);
+import { Suspense, useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { ArrowLeft, Check, ChevronDown, ChevronRight, FileImage, LoaderCircle, Save, Upload, X } from 'lucide-react';
+import geography from '@ugcnet/shared/syllabus/geography';
+import paper1 from '@ugcnet/shared/syllabus/paper1';
+import { createSupabaseBrowserClient } from '../../lib/supabase';
+import { RichEditor } from '../../components/rich-editor';
 
- useEffect(()=>{if(!sourceItemId)return;let alive=true;(async()=>{try{const res=await fetch(`/api/staging/${sourceItemId}`);const payload=await res.json();if(!res.ok)throw new Error(payload.error??"Unable to load extracted source item");const item=payload.item as StagingItem;if(!alive)return;setStaging(item);setPdfUrl(payload.signedUrl??null);const meta=item.source_documents?.metadata??{};const detected=item.paper_number??(meta.paper_number===1||meta.paper_number===2?meta.paper_number:null);setPaperNumber(detected===1?"1":detected===2?"2":"");setSourceMeta({year:Number(meta.year??2025),session:String(meta.session??"June"),shift:String(item.source_documents?.shift??meta.shift??"Unknown shift"),sourcePage:Number(item.source_page_start??1),originalNumber:String(item.source_question_number??""),ntaQuestionId:String(item.source_native_question_id??"")});const extracted=item.extracted_text??"";setStem(item.language==="hi"?"":extracted);setHiStem(item.language==="hi"?extracted:"");setOptions([...blankOptions]);setHiOptions([...blankOptions]);setSelectedTopics([]);setPrimary("");setAnswerKeys([]);setAnswerStatus("pending");setExplanation("");setReferences("");setQuestionCode("");setMessage(item.paper_number?"Source loaded. Check the detected paper assignment, then create or load its canonical question.":"This source belongs to a combined PDF. Assign Paper I or Paper II before creating a canonical question.");}catch(e){if(alive)setMessage(e instanceof Error?e.message:"Could not load staging record")}})();return()=>{alive=false}},[sourceItemId]);
+type LangOption = { key: string; en: string; hi: string };
+type Asset = { id?: string; storage_path: string; asset_type: string; placement: string; alt_text?: string; caption?: string; file_name?: string; sort_order?: number };
+type TreeTopic = { id: string; title: string; subtopics?: string[] };
+type TreeSection = { id: string; title: string; topics: TreeTopic[] };
+type TreeUnit = { id: string; title: string; sections: TreeSection[] };
+type Tree = { units: TreeUnit[] };
 
- useEffect(()=>{if(!existingQuestionCode||sourceItemId)return;let alive=true;(async()=>{try{const res=await fetch(`/api/questions/${existingQuestionCode}`);const q=await res.json();if(!res.ok)throw new Error(q.error??"Unable to load question");if(!alive)return;setQuestionCode(existingQuestionCode);const subjectCode=q.question?.subjects?.code??(existingQuestionCode.startsWith("P1-")?"00":"80");setPaperNumber(subjectCode==="00"?"1":"2");const en=q.translations?.find((x:any)=>x.language==="en");const hi=q.translations?.find((x:any)=>x.language==="hi");setStem(en?.stem_blocks?.map((b:any)=>b.text??b.html??"").join("\n")??"");setHiStem(hi?.stem_blocks?.map((b:any)=>b.text??b.html??"").join("\n")??"");const opts=(q.options??[]).sort((a:any,b:any)=>a.sort_order-b.sort_order);setOptions(opts.map((o:any)=>o.question_option_translations?.find((t:any)=>t.language==="en")?.content_blocks?.map((b:any)=>b.text??"").join(" ")??""));setHiOptions(opts.map((o:any)=>o.question_option_translations?.find((t:any)=>t.language==="hi")?.content_blocks?.map((b:any)=>b.text??"").join(" ")??""));setSelectedTopics((q.classifications??[]).map((c:any)=>c.syllabus_node_id));setPrimary((q.classifications??[]).find((c:any)=>c.is_primary)?.syllabus_node_id??"");setAnswerStatus(q.question?.answer_status??"pending");setAnswerKeys((q.verifiedAnswer?.correct_option_keys??[]) as string[]);const explanationSource=q.verifiedAnswer??q.explanationDraft??{};setExplanation((explanationSource.explanation_richtext??[]).map((b:any)=>b.html??b.text??"").join("\n"));setOptionExplanations(["A","B","C","D"].map(k=>explanationSource.option_explanations?.[k]??""));setReferences((explanationSource.references_data??[]).map((r:any)=>r.title??[r.book,r.author,r.edition,r.page].filter(Boolean).join(" · ")).join("\n"));setMessage(`Loaded ${existingQuestionCode} for editing.`)}catch(e){if(alive)setMessage(e instanceof Error?e.message:"Could not load question")} })();return()=>{alive=false}},[existingQuestionCode,sourceItemId]);
+const optionKeys = ['A', 'B', 'C', 'D'];
+const sourceMetadataFields: Array<{ key: string; label: string; multiline?: boolean }> = [
+  { key: 'vendor_row_id', label: 'Vendor row ID' },
+  { key: 'answer_source_type', label: 'Answer source type' },
+  { key: 'answer_source_title', label: 'Answer source title' },
+  { key: 'answer_source_page', label: 'Answer source page' },
+  { key: 'official_key_status', label: 'Official answer-key status' },
+  { key: 'question_match_status', label: 'Question/source match status' },
+  { key: 'match_confidence', label: 'Source-match confidence' },
+  { key: 'qa_flag', label: 'QA flag' },
+  { key: 'option_style_preference', label: 'Option style preference' },
+  { key: 'media_required', label: 'Media required' },
+  { key: 'media_description', label: 'Media description', multiline: true },
+  { key: 'media_alt_text', label: 'Media alt text', multiline: true },
+  { key: 'official_paper_page', label: 'Official paper page' },
+  { key: 'institution_paper_page', label: 'Institution paper page' },
+  { key: 'qa_note', label: 'QA note', multiline: true },
+  { key: 'source_alignment_note', label: 'Source alignment note', multiline: true },
+  { key: 'row_notes', label: 'Additional row notes', multiline: true },
+];
+const paperOne = paper1 as unknown as Tree;
+const geographyTree = geography as unknown as Tree;
 
- function toggleTopic(id:string){setSelectedTopics(v=>v.includes(id)?v.filter(x=>x!==id):[...v,id]);if(!selectedTopics.includes(id)&&!primary)setPrimary(id)}
- async function createOrLoadDraft(){if(!staging)return;if(!paperNumber){setMessage("Select Paper I or Paper II before creating the question.");return}setBusy(true);setMessage("");try{const subjectCode=paperNumber==="1"?"00":"80";const r=await fetch("/api/questions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subjectCode,paperNumber:Number(paperNumber),sourceItemId:staging.id})});const data=await r.json();if(!r.ok)throw new Error(data.error??"Could not create draft");setQuestionCode(data.questionCode);if(data.existing){const detail=await fetch(`/api/questions/${data.questionCode}`);const q=await detail.json();if(detail.ok){const translations=q.translations??[];const en=translations.find((x:any)=>x.language==="en");const hi=translations.find((x:any)=>x.language==="hi");setStem(en?.stem_blocks?.map((b:any)=>b.text??b.html??"").join("\n")??"");setHiStem(hi?.stem_blocks?.map((b:any)=>b.text??b.html??"").join("\n")??"");const opts=(q.options??[]).sort((a:any,b:any)=>a.sort_order-b.sort_order);setOptions(opts.map((o:any)=>o.question_option_translations?.find((t:any)=>t.language==="en")?.content_blocks?.map((b:any)=>b.text??"").join(" ")??""));setHiOptions(opts.map((o:any)=>o.question_option_translations?.find((t:any)=>t.language==="hi")?.content_blocks?.map((b:any)=>b.text??"").join(" ")??""));setSelectedTopics((q.classifications??[]).map((c:any)=>c.syllabus_node_id));setPrimary((q.classifications??[]).find((c:any)=>c.is_primary)?.syllabus_node_id??"");setAnswerStatus(q.question?.answer_status??"pending");setAnswerKeys((q.verifiedAnswer?.correct_option_keys??[]) as string[]);const explanationSource=q.verifiedAnswer??q.explanationDraft??{};setExplanation((explanationSource.explanation_richtext??[]).map((b:any)=>b.html??b.text??"").join("\n"));setOptionExplanations(["A","B","C","D"].map(k=>explanationSource.option_explanations?.[k]??""));setReferences((explanationSource.references_data??[]).map((r:any)=>r.title??[r.book,r.author,r.edition,r.page].filter(Boolean).join(" · ")).join("\n"));}}setMessage(data.existing?`Linked this source as another language/source for ${data.questionCode}. Existing question loaded.`:`Draft ${data.questionCode} created. Fill the options, classifications and verified explanation before submitting.`)}catch(e){setMessage(e instanceof Error?e.message:"Could not create draft")}finally{setBusy(false)}}
- async function approveAndPublish(){if(!questionCode)return;setBusy(true);setMessage("");try{const r=await fetch(`/api/questions/${questionCode}/approve`,{method:"POST"});const data=await r.json();if(!r.ok)throw new Error(data.error??"Approval failed");setMessage(`Published ${data.questionCode}.`)}catch(e){setMessage(e instanceof Error?e.message:"Approval failed")}finally{setBusy(false)}}
- async function save(submitForApproval:boolean){if(!questionCode){setMessage("Create or load the canonical draft first.");return}if(options.some((v,i)=>!v.trim()&&!hiOptions[i].trim())){setMessage("Fill all four options in at least one language before saving.");return}if(!stem.trim()&&!hiStem.trim()){setMessage("Enter the question statement in at least one language.");return}setBusy(true);setMessage("");const localized:any={};if(stem.trim())localized.en={stem:[{type:"paragraph",text:stem}],reviewed:true};if(hiStem.trim())localized.hi={stem:[{type:"paragraph",text:hiStem}],reviewed:false};const body={subjectCode:paperNumber==="1"?"00":"80",questionType,submitForApproval,answerStatus,correctOptionKeys:answerStatus==="all_options_correct"?["A","B","C","D"]:answerKeys,explanationOverview:"",explanationRichtext:[{type:"html",html:explanation},...(latex?[{type:"math",latex}]:[])],references:references.split("\n").map(line=>line.trim()).filter(Boolean).map(title=>({title})),optionExplanations:Object.fromEntries(optionExplanations.map((v,i)=>["ABCD"[i],v])),localized,options:options.map((v,i)=>({key:"ABCD"[i],localized:{...(v.trim()?{en:[{type:"paragraph",text:v}]}:{}),...(hiOptions[i].trim()?{hi:[{type:"paragraph",text:hiOptions[i]}]}:{})}})),classifications:selectedTopics.map(id=>({nodeId:id,isPrimary:id===primary})),latex,source:{...sourceMeta,sourceItemId}};
- try{const r=await fetch(`/api/questions/${questionCode}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw new Error(data.error??"Save failed");setMessage(`Saved ${data.questionCode} as ${data.status}.`)}catch(e){const msg=e instanceof Error?e.message:"Could not save";if(msg.includes("Supabase environment variables are missing")){localStorage.setItem(`draft:${questionCode}`,JSON.stringify(body));setMessage("Saved as a local browser draft. Configure Supabase to persist this in the shared staging database.")}else setMessage(msg)}finally{setBusy(false)}}
-
- return <><div className="admin-page-heading"><div><div className="admin-eyebrow">Content quality control</div><h1>Question Review Workspace</h1><p>Review source wording, bilingual content, classifications and answer evidence in one place.</p></div><span className="admin-tag amber">Needs review</span></div>
- {staging&&<div className="admin-panel" style={{marginBottom:14}}><div className="admin-panel-title">Source assignment</div><div className="admin-panel-sub">{staging.source_documents?.file_name} · {staging.source_documents?.paper_scope??"single paper"} · Page {sourceMeta.sourcePage} · Original Q. {sourceMeta.originalNumber||"unavailable"}</div><div className="admin-form-grid"><div className="admin-field-group"><label className="admin-label-field">Assign this source item to</label><select className="admin-field" value={paperNumber} onChange={e=>setPaperNumber(e.target.value as "1"|"2"|"")}><option value="">Select paper…</option><option value="1">Paper I · General Paper · Code 00</option><option value="2">Paper II · Geography · Code 80</option></select></div><div className="admin-field-group" style={{alignSelf:"end"}}><button className="admin-button" onClick={createOrLoadDraft} disabled={busy||!paperNumber}><FilePlus2 size={14}/>{busy?"Creating…":"Create / load canonical question"}</button></div></div></div>}
- <div className="admin-filter-row"><span className="admin-tag blue">{questionCode||"No canonical ID yet"}</span><span className="admin-tag">{paperNumber==="1"?"Paper I":"Geography Paper II"} · {sourceMeta.session} {sourceMeta.year}</span><span className="admin-tag">{sourceMeta.shift}</span><span className="admin-tag">Original Q. {sourceMeta.originalNumber||"—"}</span><span className="admin-tag">Page {sourceMeta.sourcePage}</span></div>
- <div className="review-grid">
-  <section className="review-pane"><h3><Eye size={14} style={{verticalAlign:"middle",marginRight:6}}/>Source PDF preview</h3><div className="source-preview">{pdfUrl?<iframe title="Original PDF page" src={`${pdfUrl}#page=${sourceMeta.sourcePage}&toolbar=0&navpanes=0`} style={{width:"100%",height:560,border:0,background:"#f5f7fa"}}/>:<div className="source-page"><div style={{fontWeight:700}}>Source page preview</div><p>Upload and open an extracted source item to preview its original PDF page here.</p></div>}</div><div className="source-footer">Original uploaded PDF · Private signed preview. Confirm the exact wording and question boundaries visually.</div><div className="admin-callout"><AlertTriangle size={14} style={{verticalAlign:"middle",marginRight:5}}/>Official NTA question PDFs do not provide answer keys in this source. Keep answers pending until independently verified.</div></section>
-  <section className="review-pane"><h3>Question content editor</h3><div className="admin-field-group"><label className="admin-label-field">Question – English</label><textarea className="admin-field" rows={5} value={stem} onChange={e=>setStem(e.target.value)} placeholder="Correct the extracted English question statement…"/></div><div className="admin-field-group"><label className="admin-label-field">Question – Hindi</label><textarea className="admin-field" rows={4} value={hiStem} onChange={e=>setHiStem(e.target.value)} placeholder="Enter or correct the Hindi version…"/></div><label className="admin-label-field">Options – English</label><div className="review-options">{options.map((v,i)=><div className="review-option" key={i}><span>{"ABCD"[i]}</span><input className="admin-field" value={v} onChange={e=>setOptions(a=>a.map((x,j)=>i===j?e.target.value:x))}/></div>)}</div><label className="admin-label-field">Options – Hindi (optional)</label><div className="review-options">{hiOptions.map((v,i)=><div className="review-option" key={i}><span>{"ABCD"[i]}</span><input className="admin-field" value={v} onChange={e=>setHiOptions(a=>a.map((x,j)=>i===j?e.target.value:x))} placeholder="Hindi option"/></div>)}</div><div className="admin-field-group"><label className="admin-label-field">Question format</label><select className="admin-field" value={questionType} onChange={e=>setQuestionType(e.target.value)}><option value="mcq">Standard MCQ</option><option value="table">Table-based</option><option value="image">Image / diagram</option><option value="map">Map-based</option><option value="comprehension">Comprehension sub-question</option><option value="matrix">Matrix / matching</option></select></div></section>
-  <section className="review-pane"><h3>Syllabus classification</h3><div className="admin-callout">Select the correct paper first. The taxonomy below changes between the separate Paper I and Geography syllabi.</div><div className="admin-field-group"><label className="admin-label-field">Choose multiple topics</label><div className="review-chip-row">{topics.map((t:any)=><button type="button" key={t.id} className={`review-chip ${selectedTopics.includes(t.id)?"selected":""}`} onClick={()=>toggleTopic(t.id)}>{selectedTopics.includes(t.id)?"✓ ":""}{t.unitTitle} · {t.title}</button>)}</div></div><div className="admin-field-group"><label className="admin-label-field">Primary topic</label><select className="admin-field" value={primary} onChange={e=>setPrimary(e.target.value)}><option value="">Choose primary topic</option>{topics.filter((t:any)=>selectedTopics.includes(t.id)).map((t:any)=><option key={t.id} value={t.id}>{t.unitTitle} · {t.title}</option>)}</select></div><div className="admin-field-group"><label className="admin-label-field">Answer verification</label><select className="admin-field" value={answerStatus} onChange={e=>setAnswerStatus(e.target.value)}><option value="pending">Pending verification</option><option value="single_correct">Single correct</option><option value="multiple_correct">Multiple correct</option><option value="all_options_correct">All options correct</option><option value="dropped">Dropped / invalid</option><option value="disputed">Disputed</option></select></div><div className="admin-field-group"><label className="admin-label-field">Correct option(s) (only after verification)</label><div className="review-chip-row">{["A","B","C","D"].map(k=><button key={k} type="button" disabled={!(answerStatus==="single_correct"||answerStatus==="multiple_correct")} className={`review-chip ${answerKeys.includes(k)?"selected":""}`} onClick={()=>setAnswerKeys(v=>answerStatus==="single_correct"?(v.includes(k)?[]:[k]):v.includes(k)?v.filter(x=>x!==k):[...v,k])}>{k}</button>)}</div>{answerStatus==="pending"&&<small style={{color:"#a66912",fontSize:9,display:"block",marginTop:7}}>Do not infer the answer from the official question paper.</small>}</div><div className="admin-field-group"><label className="admin-label-field">General explanation</label><RichEditor content={explanation} onChange={setExplanation}/></div><div className="admin-field-group"><label className="admin-label-field">Option-wise explanations</label>{optionExplanations.map((v,i)=><div style={{marginBottom:7}} key={i}><label className="admin-label-field">Option {"ABCD"[i]}</label><textarea className="admin-field" rows={2} value={v} onChange={e=>setOptionExplanations(a=>a.map((x,j)=>i===j?e.target.value:x))} placeholder={`Explain option ${"ABCD"[i]}…`}/></div>)}</div><div className="admin-field-group"><label className="admin-label-field">LaTeX equation (optional)</label><input className="latex-field" value={latex} onChange={e=>setLatex(e.target.value)} placeholder="e.g. \\frac{a}{b}"/></div><div className="admin-field-group"><label className="admin-label-field">References</label><textarea className="admin-field" rows={2} value={references} onChange={e=>setReferences(e.target.value)} placeholder="One reference per line: Book · Author · Edition · Page"/></div><div className="review-actions"><button className="admin-button secondary" onClick={()=>save(false)} disabled={busy||!questionCode}><Save size={13}/>Save draft</button><button className="admin-button" onClick={()=>save(true)} disabled={busy||!questionCode||selectedTopics.length===0}><Send size={13}/>Submit for approval</button><button className="admin-button success" onClick={approveAndPublish} disabled={busy||!questionCode||answerStatus==="pending"||answerStatus==="disputed"||((answerStatus==="single_correct"||answerStatus==="multiple_correct")&&answerKeys.length===0)}><Send size={13}/>Approve & publish</button></div>{message&&<div className="admin-callout">{message}</div>}</section>
- </div></>;
+function blockText(blocks: any[] | undefined): string {
+  return (blocks ?? []).map((block) => String(block.text ?? block.html ?? '')).join('\n').replace(/<\/?p[^>]*>/gi, '').replace(/<br\s*\/?\s*>/gi, '\n');
+}
+function languageText(entries: any[] | undefined, language: 'en' | 'hi'): string {
+  const entry = (entries ?? []).find((item) => item.language === language && item.script_variant === 'native');
+  return blockText(entry?.stem_blocks);
+}
+function contentText(entries: any[] | undefined, language: 'en' | 'hi'): string {
+  const entry = (entries ?? []).find((item) => item.language === language && item.script_variant === 'native');
+  return blockText(entry?.content_blocks);
+}
+function explanationText(entries: any[] | undefined, language: 'en' | 'hi'): string {
+  const entry = (entries ?? []).find((item) => item.language === language && item.script_variant === 'native');
+  if (entry?.explanation_overview) return String(entry.explanation_overview);
+  return blockText(entry?.explanation_richtext);
+}
+function getPaperEvent(value: any) {
+  const paper = Array.isArray(value?.exam_papers) ? value.exam_papers[0] : value?.exam_papers;
+  const event = Array.isArray(paper?.exam_events) ? paper.exam_events[0] : paper?.exam_events;
+  return { paper, event };
 }
 
-export default function ReviewPage(){ return <Suspense fallback={<div className="admin-panel">Loading review workspace…</div>}><ReviewContent/></Suspense>; }
+function ReviewEditorContent() {
+  const search = useSearchParams();
+  const questionCode = search.get('questionCode') ?? '';
+  const [record, setRecord] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [stemEn, setStemEn] = useState('');
+  const [stemHi, setStemHi] = useState('');
+  const [options, setOptions] = useState<LangOption[]>(optionKeys.map((key) => ({ key, en: '', hi: '' })));
+  const [answerStatus, setAnswerStatus] = useState<'single_correct' | 'multiple_correct' | 'all_options_correct'>('single_correct');
+  const [correctKeys, setCorrectKeys] = useState<string[]>([]);
+  const [explanationEn, setExplanationEn] = useState('');
+  const [explanationHi, setExplanationHi] = useState('');
+  const [optionExplanations, setOptionExplanations] = useState<Record<string, string>>({});
+  const [referencesText, setReferencesText] = useState('');
+  const [questionType, setQuestionType] = useState('mcq');
+  const [unitId, setUnitId] = useState('');
+  const [sectionId, setSectionId] = useState('');
+  const [topicId, setTopicId] = useState('');
+  const [subtopicId, setSubtopicId] = useState('');
+  const [keywordsText, setKeywordsText] = useState('');
+  const [appearanceId, setAppearanceId] = useState('');
+  const [originalNumber, setOriginalNumber] = useState('');
+  const [paperOrder, setPaperOrder] = useState('');
+  const [appearanceNotes, setAppearanceNotes] = useState('');
+  const [sourceNote, setSourceNote] = useState('');
+  const [sourceMetadata, setSourceMetadata] = useState<Record<string, string>>({});
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [openMedia, setOpenMedia] = useState(false);
+  const [openExplanation, setOpenExplanation] = useState(false);
+  const [openTaxonomy, setOpenTaxonomy] = useState(true);
+  const [expandedUnits, setExpandedUnits] = useState<string[]>([]);
+  const [expandedSections, setExpandedSections] = useState<string[]>([]);
+
+  const subjectCode = String(record?.question?.subjects?.code ?? '80');
+  const taxonomy: Tree = subjectCode === '00' ? paperOne : subjectCode === '80' ? geographyTree : { units: [] };
+  const units = taxonomy.units ?? [];
+  const currentUnit = units.find((unit) => unit.id === unitId) ?? null;
+  const currentSection = currentUnit?.sections.find((section) => section.id === sectionId) ?? null;
+  const currentTopic = currentSection?.topics.find((topic) => topic.id === topicId) ?? null;
+  const currentSubtopics = (currentTopic?.subtopics ?? []).map((title, index) => ({ id: `${currentTopic?.id}-S${String(index + 1).padStart(2, '0')}`, title }));
+
+  const load = useCallback(async () => {
+    if (!questionCode) { setError('Open a question from the Question Bank or a completed Excel import.'); setLoading(false); return; }
+    setLoading(true); setError(''); setNotice('');
+    try {
+      const response = await fetch(`/api/questions/${encodeURIComponent(questionCode)}`, { cache: 'no-store' });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? 'Unable to load question.');
+      setRecord(payload);
+      const draft = payload.editorDraft?.draft_payload;
+      if (draft) {
+        setStemEn(String(draft.stemEn ?? ''));
+        setStemHi(String(draft.stemHi ?? ''));
+        setOptions(Array.isArray(draft.options) ? optionKeys.map((key) => ({ key, en: String(draft.options.find((o: any) => o.key === key)?.en ?? ''), hi: String(draft.options.find((o: any) => o.key === key)?.hi ?? '') })) : optionKeys.map((key) => ({ key, en: '', hi: '' })));
+        setAnswerStatus(draft.answerStatus ?? 'single_correct');
+        setCorrectKeys(draft.correctOptionKeys ?? []);
+        setExplanationEn(String(draft.explanationEn ?? ''));
+        setExplanationHi(String(draft.explanationHi ?? ''));
+        setOptionExplanations(draft.optionExplanations ?? {});
+        setReferencesText((draft.references ?? []).map((item: any) => item.title ?? '').join('\n'));
+        setQuestionType(String(draft.questionType ?? payload.question.question_type));
+        setUnitId(String(draft.classification?.unitId ?? ''));
+        setSectionId(String(draft.classification?.sectionId ?? ''));
+        setTopicId(String(draft.classification?.topicId ?? ''));
+        setSubtopicId(String(draft.classification?.subtopicId ?? ''));
+        setKeywordsText((draft.keywords ?? []).join(', '));
+        setAppearanceId(String(draft.appearance?.examPaperId ?? payload.appearances?.[0]?.exam_papers?.id ?? ''));
+        setOriginalNumber(String(draft.appearance?.originalQuestionNumber ?? payload.appearances?.[0]?.original_question_number ?? ''));
+        setPaperOrder(String(draft.appearance?.paperOrder ?? payload.appearances?.[0]?.paper_order ?? ''));
+        setAppearanceNotes(String(draft.appearance?.notes ?? payload.appearances?.[0]?.appearance_notes ?? ''));
+        setAssets(Array.isArray(draft.assets) ? draft.assets : payload.assets ?? []);
+        setSourceNote(String(draft.sourceNote ?? payload.answerEvidence?.[0]?.provenance_note ?? ''));
+        setSourceMetadata((draft.sourceMetadata ?? payload.appearances?.[0]?.source_metadata?.questionRow ?? {}) as Record<string, string>);
+        setNotice('Draft changes loaded. The previously published version remains live until you publish these edits.');
+      } else {
+        setStemEn(languageText(payload.translations, 'en'));
+        setStemHi(languageText(payload.translations, 'hi'));
+        setOptions(optionKeys.map((key) => {
+          const option = (payload.options ?? []).find((item: any) => item.option_key === key);
+          return { key, en: contentText(option?.question_option_translations, 'en'), hi: contentText(option?.question_option_translations, 'hi') };
+        }));
+        setAnswerStatus(payload.verifiedAnswer?.answer_status ?? payload.question.answer_status ?? 'single_correct');
+        setCorrectKeys(payload.verifiedAnswer?.correct_option_keys ?? []);
+        setExplanationEn(explanationText(payload.explanationTranslations, 'en') || payload.explanationDraft?.explanation_overview || '');
+        setExplanationHi(explanationText(payload.explanationTranslations, 'hi'));
+        setOptionExplanations(payload.verifiedAnswer?.option_explanations ?? payload.explanationDraft?.option_explanations ?? {});
+        setReferencesText((payload.verifiedAnswer?.references_data ?? payload.explanationDraft?.references_data ?? []).map((item: any) => item.title ?? item.book ?? '').join('\n'));
+        setQuestionType(String(payload.question.question_type ?? 'mcq'));
+        const classified = payload.classifications ?? [];
+        const loadedSubjectCode = String(payload.question?.subjects?.code ?? '80');
+        const loadedUnits = (loadedSubjectCode === '00' ? paperOne : loadedSubjectCode === '80' ? geographyTree : { units: [] }).units;
+        const flat = loadedUnits.flatMap((unit) => unit.sections.flatMap((section) => section.topics.flatMap((topic) => [
+          { id: unit.id, type: 'unit' }, { id: section.id, type: 'section' }, { id: topic.id, type: 'topic' },
+          ...(topic.subtopics ?? []).map((_, index) => ({ id: `${topic.id}-S${String(index + 1).padStart(2, '0')}`, type: 'subtopic' })),
+        ])));
+        const ids = new Set(classified.map((item: any) => item.syllabus_node_id));
+        const selectedUnitId = flat.find((item) => item.type === 'unit' && ids.has(item.id))?.id ?? '';
+        const selectedSectionId = flat.find((item) => item.type === 'section' && ids.has(item.id))?.id ?? '';
+        setUnitId(selectedUnitId);
+        setSectionId(selectedSectionId);
+        setTopicId(flat.find((item) => item.type === 'topic' && ids.has(item.id))?.id ?? '');
+        setSubtopicId(flat.find((item) => item.type === 'subtopic' && ids.has(item.id))?.id ?? '');
+        setExpandedUnits(selectedUnitId ? [selectedUnitId] : []);
+        setExpandedSections(selectedSectionId ? [selectedSectionId] : []);
+        setKeywordsText((payload.keywords ?? []).map((item: any) => item.keyword).join(', '));
+        const appearance = payload.appearances?.[0];
+        const { paper, event } = getPaperEvent(appearance);
+        setAppearanceId(String(paper?.id ?? ''));
+        setOriginalNumber(String(appearance?.original_question_number ?? ''));
+        setPaperOrder(String(appearance?.paper_order ?? ''));
+        setAppearanceNotes(String(appearance?.appearance_notes ?? `${event?.year ?? ''} ${event?.session ?? ''}`.trim()));
+        setAssets(payload.assets ?? []);
+        setSourceNote(String(payload.answerEvidence?.[0]?.provenance_note ?? ''));
+        setSourceMetadata((appearance?.source_metadata?.questionRow ?? {}) as Record<string, string>);
+      }
+      const savedUnit = draft?.classification?.unitId ?? '';
+      if (savedUnit) setExpandedUnits([String(savedUnit)]);
+      const savedSection = draft?.classification?.sectionId ?? '';
+      if (savedSection) setExpandedSections([String(savedSection)]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to load question.');
+    } finally {
+      setLoading(false);
+    }
+  }, [questionCode]);
+
+  useEffect(() => { void load(); }, [load]);
+
+  function changeOption(key: string, language: 'en' | 'hi', value: string) {
+    setOptions((current) => current.map((option) => option.key === key ? { ...option, [language]: value } : option));
+  }
+  function toggleAnswer(key: string) {
+    if (answerStatus === 'all_options_correct') return;
+    setCorrectKeys((current) => {
+      if (answerStatus === 'single_correct') return current.includes(key) ? [] : [key];
+      return current.includes(key) ? current.filter((item) => item !== key) : [...current, key];
+    });
+  }
+  function setAnswerMode(value: string) {
+    const next = value as typeof answerStatus;
+    setAnswerStatus(next);
+    if (next === 'all_options_correct') setCorrectKeys([...optionKeys]);
+    else if (next === 'single_correct' && correctKeys.length > 1) setCorrectKeys(correctKeys.slice(0, 1));
+    else if (next === 'multiple_correct' && correctKeys.length < 2) setCorrectKeys([]);
+  }
+
+  function selectTopic(unit: TreeUnit, section: TreeSection, topic: TreeTopic) {
+    setUnitId(unit.id);
+    setSectionId(section.id);
+    setTopicId(topic.id);
+    setSubtopicId('');
+    setExpandedUnits((current) => current.includes(unit.id) ? current : [...current, unit.id]);
+    setExpandedSections((current) => current.includes(section.id) ? current : [...current, section.id]);
+  }
+
+  async function attachImage(file: File) {
+    if (!record?.question?.id) return;
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { setError('Attach a PNG, JPG or WebP image.'); return; }
+    if (file.size > 20 * 1024 * 1024) { setError('Images must be 20 MB or smaller.'); return; }
+    const client = createSupabaseBrowserClient();
+    if (!client) { setError('Supabase browser configuration is missing.'); return; }
+    setUploading(true); setError('');
+    try {
+      const { data: { user }, error: userError } = await client.auth.getUser();
+      if (userError || !user) throw new Error('Admin session expired. Sign in again.');
+      const nonce = crypto.randomUUID?.() ?? String(Date.now());
+      const safeName = file.name.replace(/[^A-Za-z0-9._-]/g, '_').slice(-80);
+      const storagePath = `question-assets/${user.id}/${record.question.id}/${nonce}-${safeName}`;
+      const { error: uploadError } = await client.storage.from('question-assets').upload(storagePath, file, { contentType: file.type, upsert: false });
+      if (uploadError) throw uploadError;
+      setAssets((current) => [...current, { storage_path: storagePath, asset_type: 'image', placement: 'question', alt_text: '', caption: file.name, file_name: file.name }]);
+      setNotice('Image attached. Use Save Draft or Publish to save the question and attachment.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Image upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function save(action: 'draft' | 'publish') {
+    if (action === 'publish') {
+      if (!stemEn.trim()) { setError('Enter the English question before publishing.'); return; }
+      if (options.some((option) => !option.en.trim())) { setError('Fill all four English options A–D.'); return; }
+      if (answerStatus === 'single_correct' && correctKeys.length !== 1) { setError('Select exactly one correct option.'); return; }
+      if (answerStatus === 'multiple_correct' && correctKeys.length < 2) { setError('Select at least two correct options.'); return; }
+      const hasHindi = Boolean(stemHi.trim() || options.some((option) => option.hi.trim()));
+      if (hasHindi && (!stemHi.trim() || options.some((option) => !option.hi.trim()))) { setError('For a Hindi version, provide the Hindi question and all four Hindi options.'); return; }
+      if (!unitId || !sectionId || !topicId) { setError('Select the Unit, Section and Topic before publishing.'); setOpenTaxonomy(true); return; }
+    }
+    setSaving(true); setError(''); setNotice('');
+    const payload = {
+      subjectCode,
+      baseRevision: Number(record.editorDraft?.base_revision ?? record.question.current_revision ?? 1),
+      contentOrigin: 'manual',
+      explanationOrigin: 'manual',
+      sourceNote,
+      sourceMetadata,
+      questionType,
+      stemEn,
+      stemHi,
+      options,
+      answerStatus,
+      correctOptionKeys: answerStatus === 'all_options_correct' ? optionKeys : correctKeys,
+      explanationEn,
+      explanationHi,
+      optionExplanations,
+      references: referencesText.split('\n').map((title) => title.trim()).filter(Boolean).map((title) => ({ title })),
+      classification: { unitId, sectionId, topicId, subtopicId },
+      keywords: keywordsText.split(/[,;\n]/).map((item) => item.trim()).filter(Boolean),
+      appearance: { examPaperId: appearanceId, originalQuestionNumber: originalNumber, paperOrder, notes: appearanceNotes },
+      assets,
+    };
+    try {
+      const response = await fetch(`/api/questions/${encodeURIComponent(questionCode)}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, payload }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? `Unable to ${action === 'draft' ? 'save draft' : 'publish'} question.`);
+      if (action === 'draft') {
+        setRecord((current: any) => current ? { ...current, editorDraft: { draft_payload: payload, base_revision: payload.baseRevision } } : current);
+        setNotice('Draft saved. The current published version remains live until you publish these edits.');
+      } else {
+        setRecord((current: any) => current ? { ...current, question: { ...current.question, status: 'published', current_revision: result.revision ?? current.question.current_revision }, editorDraft: null } : current);
+        setNotice(`${questionCode} published successfully. The Student Portal will now serve the updated version.`);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Save failed. Your changes are still in this editor; please retry.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) return <div className="admin-panel editor-loading"><LoaderCircle className="spin"/> Loading question…</div>;
+  if (error && !record) return <section className="admin-panel"><div className="admin-callout">{error}</div><Link className="admin-button secondary" href="/questions"><ArrowLeft size={14}/> Question Bank</Link></section>;
+  if (!record) return null;
+
+  const appearance = record.appearances?.[0];
+  const { paper, event } = getPaperEvent(appearance);
+  const isDraft = Boolean(record.editorDraft);
+
+  return (
+    <div className="question-editor-page">
+      <div className="admin-page-heading editor-page-heading">
+        <div>
+          <div className="admin-eyebrow">Compact bilingual editor · {record.question.subjects?.name ?? subjectCode}</div>
+          <h1>{questionCode}</h1>
+          <p>{event?.year ?? 'Year not set'} · {event?.session ?? 'Session not set'} · Paper {paper?.paper_number ?? '—'} · Original Q. {originalNumber || '—'}</p>
+        </div>
+        <div className="editor-heading-actions">
+          <span className={`admin-tag ${record.question.status === 'published' ? 'green' : 'amber'}`}>{record.question.status}</span>
+          <Link className="admin-button secondary" href="/questions"><ArrowLeft size={13}/> Question Bank</Link>
+        </div>
+      </div>
+
+      {isDraft && <div className="admin-callout editor-draft-note">You have unsent draft edits. The existing published version remains visible to students until you choose Publish.</div>}
+
+      <section className="admin-panel editor-main-panel">
+        <div className="editor-section-topline">
+          <div><b>Question & options</b><small>English and Hindi stay side by side. Edit either language directly.</small></div>
+          <select className="admin-field editor-question-type" value={questionType} onChange={(event) => setQuestionType(event.target.value)} aria-label="Question type">
+            <option value="mcq">MCQ</option><option value="matrix">Matching / sequence</option><option value="comprehension">Comprehension</option><option value="table">Table-based</option><option value="image">Image-based</option><option value="map">Map-based</option><option value="numeric">Numeric</option><option value="other">Other</option>
+          </select>
+        </div>
+
+        <div className="editor-language-grid">
+          <div className="editor-language-panel">
+            <div className="editor-language-heading"><strong>English</strong><span className="admin-tag blue">Primary</span></div>
+            <textarea className="admin-field editor-stem-input" value={stemEn} onChange={(event) => setStemEn(event.target.value)} placeholder="Enter English question…" />
+          </div>
+          <div className="editor-language-panel">
+            <div className="editor-language-heading"><strong>हिन्दी</strong><span className="admin-tag">Optional</span></div>
+            <textarea className="admin-field editor-stem-input" value={stemHi} onChange={(event) => setStemHi(event.target.value)} placeholder="हिंदी प्रश्न यहाँ लिखें…" />
+          </div>
+        </div>
+
+        <div className="editor-options-heading"><b>Options</b><small>Each English option is paired with its Hindi version.</small></div>
+        <div className="editor-option-grid">
+          {options.map((option) => (
+            <div className="editor-option-row" key={option.key}>
+              <span className="editor-option-key">{option.key}</span>
+              <input className="admin-field" value={option.en} onChange={(event) => changeOption(option.key, 'en', event.target.value)} placeholder={`Option ${option.key} · English`} />
+              <input className="admin-field" value={option.hi} onChange={(event) => changeOption(option.key, 'hi', event.target.value)} placeholder={`विकल्प ${option.key} · हिन्दी (optional)`} />
+            </div>
+          ))}
+        </div>
+
+        <div className="editor-answer-row">
+          <div><b>Correct answer</b><small>Imported answer is used directly. Change it whenever necessary.</small></div>
+          <select className="admin-field editor-answer-type" value={answerStatus} onChange={(event) => setAnswerMode(event.target.value)}>
+            <option value="single_correct">Single correct</option>
+            <option value="multiple_correct">Multiple correct</option>
+            <option value="all_options_correct">All options correct</option>
+          </select>
+          <div className="editor-answer-keys">
+            {optionKeys.map((key) => <button type="button" key={key} className={`editor-answer-key ${correctKeys.includes(key) || answerStatus === 'all_options_correct' ? 'selected' : ''}`} onClick={() => toggleAnswer(key)} disabled={answerStatus === 'all_options_correct'}>{key}{(correctKeys.includes(key) || answerStatus === 'all_options_correct') && <Check size={12}/>}</button>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="admin-panel editor-taxonomy-panel">
+        <button type="button" className="editor-collapse-heading" onClick={() => setOpenTaxonomy((value) => !value)}>
+          <span><b>Syllabus classification</b><small>{currentUnit?.title ?? 'Choose a unit'}{currentTopic ? ` · ${currentTopic.title}` : ''}</small></span>
+          {openTaxonomy ? <ChevronDown size={18}/> : <ChevronRight size={18}/>}
+        </button>
+        {openTaxonomy && (
+          <div className="editor-taxonomy-tree">
+            {units.map((unit) => (
+              <details key={unit.id} open={expandedUnits.includes(unit.id)} onToggle={(event) => {
+                const open = (event.currentTarget as HTMLDetailsElement).open;
+                setExpandedUnits((current) => open ? [...new Set([...current, unit.id])] : current.filter((id) => id !== unit.id));
+              }}>
+                <summary>{unit.title}<span>{unit.sections.reduce((count, section) => count + section.topics.length, 0)} topics</span></summary>
+                {unit.sections.map((section) => (
+                  <details className="editor-taxonomy-section" key={section.id} open={expandedSections.includes(section.id)} onToggle={(event) => {
+                    const open = (event.currentTarget as HTMLDetailsElement).open;
+                    setExpandedSections((current) => open ? [...new Set([...current, section.id])] : current.filter((id) => id !== section.id));
+                  }}>
+                    <summary>{section.title}<span>{section.topics.length}</span></summary>
+                    <div className="editor-taxonomy-topics">
+                      {section.topics.map((topic) => (
+                        <div className={`editor-topic-choice ${topicId === topic.id ? 'active' : ''}`} key={topic.id}>
+                          <button type="button" onClick={() => selectTopic(unit, section, topic)}><span className="editor-topic-radio"/>{topic.title}</button>
+                          {topicId === topic.id && topic.subtopics?.length ? (
+                            <div className="editor-subtopic-list">
+                              {currentSubtopics.map((sub) => <button type="button" key={sub.id} className={subtopicId === sub.id ? 'active' : ''} onClick={() => setSubtopicId(sub.id)}>{subtopicId === sub.id ? '✓ ' : ''}{sub.title}</button>)}
+                            </div>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </details>
+            ))}
+          </div>
+        )}
+        <div className="editor-selected-taxonomy">
+          {currentUnit && <span>{currentUnit.title}</span>}
+          {currentSection && <span>{currentSection.title}</span>}
+          {currentTopic && <span>{currentTopic.title}</span>}
+          {currentSubtopics.find((item) => item.id === subtopicId) && <span>{currentSubtopics.find((item) => item.id === subtopicId)?.title}</span>}
+        </div>
+        <input className="admin-field editor-keywords" value={keywordsText} onChange={(event) => setKeywordsText(event.target.value)} placeholder="Keywords (comma-separated)" />
+      </section>
+
+      <section className="admin-panel editor-extra-panel">
+        <details open={openExplanation} onToggle={(event) => setOpenExplanation((event.currentTarget as HTMLDetailsElement).open)}>
+          <summary>Explanations & references <span>Optional · EN and Hindi</span></summary>
+          <div className="editor-language-grid editor-explanations-grid">
+            <div className="editor-language-panel"><label>English explanation</label><RichEditor content={explanationEn} onChange={setExplanationEn} placeholder="Write or edit the English explanation…" /></div>
+            <div className="editor-language-panel"><label>Hindi explanation</label><RichEditor content={explanationHi} onChange={setExplanationHi} placeholder="हिंदी में व्याख्या लिखें…" /></div>
+          </div>
+          <div className="editor-option-explanations">
+            <b>Option-wise explanations</b>
+            {optionKeys.map((key) => <label key={key}>Option {key}<textarea className="admin-field" rows={2} value={String(optionExplanations[key] ?? '')} onChange={(event) => setOptionExplanations((current) => ({ ...current, [key]: event.target.value }))} placeholder={`Explain option ${key} (optional)…`} /></label>)}
+          </div>
+          <textarea className="admin-field editor-references" rows={2} value={referencesText} onChange={(event) => setReferencesText(event.target.value)} placeholder="References — one per line" />
+        </details>
+      </section>
+
+      <section className="admin-panel editor-extra-panel">
+        <details open={openMedia} onToggle={(event) => setOpenMedia((event.currentTarget as HTMLDetailsElement).open)}>
+          <summary>Images & source metadata <span>{assets.length} attachments</span></summary>
+          <div className="editor-media-toolbar">
+            <label className="admin-button secondary"><Upload size={13}/>{uploading ? 'Uploading…' : 'Attach image'}<input type="file" accept="image/png,image/jpeg,image/webp" hidden disabled={uploading} onChange={(event) => { const file = event.target.files?.[0]; if (file) void attachImage(file); event.currentTarget.value = ''; }}/></label>
+            <span className="admin-panel-sub">PNG, JPG or WebP · Max 20 MB each</span>
+          </div>
+          {assets.map((asset, index) => <div className="editor-asset-item" key={`${asset.storage_path}-${index}`}><FileImage size={15}/><span>{asset.file_name ?? asset.caption ?? asset.storage_path.split('/').pop()}</span><button type="button" onClick={() => setAssets((current) => current.filter((_, i) => i !== index))} aria-label="Remove attachment"><X size={15}/></button></div>)}
+          <div className="editor-meta-grid">
+            <label>Original question number<input className="admin-field" value={originalNumber} onChange={(event) => setOriginalNumber(event.target.value)} /></label>
+            <label>Original paper order<input className="admin-field" inputMode="numeric" value={paperOrder} onChange={(event) => setPaperOrder(event.target.value.replace(/[^0-9]/g, ''))} /></label>
+            <label>Exam appearance notes<input className="admin-field" value={appearanceNotes} onChange={(event) => setAppearanceNotes(event.target.value)} /></label>
+            <label className="editor-source-note-field">Answer source / provenance<textarea className="admin-field" rows={2} value={sourceNote} onChange={(event) => setSourceNote(event.target.value)} placeholder="General source/provenance note…" /></label>
+          </div>
+          <div className="editor-meta-grid editor-source-metadata-grid">
+            {sourceMetadataFields.map((field) => (
+              <label key={field.key}>{field.label}
+                {field.multiline ? (
+                  <textarea className="admin-field" rows={2} value={String(sourceMetadata[field.key] ?? '')} onChange={(event) => setSourceMetadata((current) => ({ ...current, [field.key]: event.target.value }))} />
+                ) : (
+                  <input className="admin-field" value={String(sourceMetadata[field.key] ?? '')} onChange={(event) => setSourceMetadata((current) => ({ ...current, [field.key]: event.target.value }))} />
+                )}
+              </label>
+            ))}
+          </div>
+        </details>
+      </section>
+
+      {error && <div className="admin-callout editor-error" role="alert">{error}</div>}
+      {notice && <div className="admin-callout editor-notice" role="status">{notice}</div>}
+
+      <div className="editor-sticky-actions">
+        <span>{record.question.status === 'published' ? 'Published version stays live until you publish edits.' : 'This question is currently a draft.'}</span>
+        <div>
+          <button type="button" className="admin-button secondary" onClick={() => void save('draft')} disabled={saving || uploading}><Save size={14}/>{saving ? 'Saving…' : 'Save Draft'}</button>
+          <button type="button" className="admin-button success" onClick={() => void save('publish')} disabled={saving || uploading}><Check size={14}/>{saving ? 'Publishing…' : 'Publish'}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ReviewPage() {
+  return (
+    <Suspense fallback={<div className="admin-panel editor-loading">Loading question editor…</div>}>
+      <ReviewEditorContent />
+    </Suspense>
+  );
+}

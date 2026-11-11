@@ -35,9 +35,9 @@ export async function GET() {
 export async function POST(request: Request) {
   let batchId = '';
   try {
-    const { supabase, user, role } = await adminContext(['super_admin','importer']);
+    const { supabase, user, role } = await adminContext(['super_admin']);
     if (!user) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    if (!role) return NextResponse.json({ error: 'Super Admin or Importer role required' }, { status: 403 });
+    if (!role) return NextResponse.json({ error: 'Only the Super Admin can import and publish a trusted workbook.' }, { status: 403 });
     const body = await request.json() as { storagePath?: unknown; fileName?: unknown };
     const storagePath = typeof body.storagePath === 'string' ? body.storagePath : '';
     const fileName = typeof body.fileName === 'string' ? body.fileName : '';
@@ -57,6 +57,15 @@ export async function POST(request: Request) {
     const year = Number(metadata.exam_year);
     if (!Number.isInteger(year) || year < 2000 || year > 2100) throw new Error('Exam Metadata: enter a valid exam_year between 2000 and 2100.');
     const session = metadata.exam_session || 'Other';
+    const requiredMetadata: Array<[string, string]> = [
+      ['official_source_filename', 'official_source_filename is required.'],
+      ['institution_solved_filename', 'institution_solved_filename is required.'],
+      ['prepared_by', 'prepared_by is required.'],
+      ['ai_model', 'ai_model is required.'],
+    ];
+    for (const [field, message] of requiredMetadata) {
+      if (!String(metadata[field] ?? '').trim()) throw new Error(`Exam Metadata: ${message}`);
+    }
     if (metadata.exam_date) {
       const rawDate = String(metadata.exam_date).trim();
       const serial = Number(rawDate);
@@ -72,19 +81,13 @@ export async function POST(request: Request) {
     if (!['June','December','Other'].includes(session)) throw new Error('Exam Metadata: exam_session must be June, December or Other.');
     const eventType = metadata.event_type || 'regular';
     if (!['regular','re_exam','special','unknown'].includes(eventType)) throw new Error('Exam Metadata: event_type must be regular, re_exam, special or unknown.');
-    const orderCounters = new Map<string, number>();
     const normalized = parsed.questions.map((record, index) => {
       const paper = String(record.paper ?? '').toUpperCase().replace(/PAPER\s*/g, '').trim();
       const defaultPaperIiCode = String(metadata.paper_ii_subject_code ?? '').trim();
       const subject = String(record.subject_code || (paper === 'I' || paper === '1' ? '00' : defaultPaperIiCode)).trim();
+      if (!record.subject_code && subject) record.subject_code = subject;
       if (!record.subject_name && paper !== 'I' && paper !== '1' && metadata.paper_ii_subject_name) record.subject_name = metadata.paper_ii_subject_name;
-      const key = `${paper}:${subject}`;
-      const nextOrder = (orderCounters.get(key) ?? 0) + 1;
-      orderCounters.set(key, nextOrder);
-      const inferred = !String(record.paper_order ?? '').trim();
-      const normalizedRow = normalizeQuestionRow(inferred ? { ...record, paper_order: String(nextOrder) } : record, index);
-      if (inferred) normalizedRow.warnings.push(`Paper order was inferred as ${nextOrder} from the worksheet order within Paper ${paper || '?'}. Confirm the official sequence.`);
-      return normalizedRow;
+      return normalizeQuestionRow(record, index);
     });
     const duplicateOrder = new Set<string>();
     const duplicateQuestionNumbers = new Set<string>();
@@ -94,13 +97,13 @@ export async function POST(request: Request) {
         if (duplicateOrder.has(key)) row.errors.push(`Duplicate paper_order ${row.paperOrder} in Paper ${row.paperNumber}.`);
         duplicateOrder.add(key);
         const originalKey = `${row.paperNumber}:${row.subjectCode}:${String(row.originalQuestionNumber).toLowerCase()}`;
-        if (row.originalQuestionNumber && duplicateQuestionNumbers.has(originalKey)) row.warnings.push(`Original question number ${row.originalQuestionNumber} appears more than once in this paper. Confirm source numbering.`);
+        if (row.originalQuestionNumber && duplicateQuestionNumbers.has(originalKey)) row.errors.push(`Original question number ${row.originalQuestionNumber} appears more than once in this paper.`);
         if (row.originalQuestionNumber) duplicateQuestionNumbers.add(originalKey);
       }
     }
     const validSubjects = new Set<string>();
     for (const code of [...new Set(normalized.map((row) => row.subjectCode).filter(Boolean))]) {
-      const { data: subject } = await supabase.from('subjects').select('code').eq('code', code).maybeSingle();
+      const { data: subject } = await supabase.from('subjects').select('code').eq('code', code).eq('active', true).maybeSingle();
       if (subject) validSubjects.add(code);
     }
     for (const row of normalized) {
@@ -111,6 +114,18 @@ export async function POST(request: Request) {
     const batchCode = `XLSX-${year}-${session.toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
     const validCount = normalized.filter((row) => row.errors.length === 0).length;
     const errorCount = normalized.length - validCount;
+    if (errorCount > 0) {
+      const rowErrors = normalized.flatMap((row, index) => row.errors.map((message) => ({
+        worksheetRow: index + 2,
+        paper: row.paperNumber === 1 ? 'I' : row.paperNumber === 2 ? 'II' : '?',
+        originalQuestionNumber: row.originalQuestionNumber,
+        message,
+      })));
+      return NextResponse.json({
+        error: `The workbook has ${errorCount} question row(s) that need correction. No questions were imported or published.`,
+        rowErrors,
+      }, { status: 422 });
+    }
     const { data: batch, error: batchError } = await supabase.from('excel_import_batches').insert({
       batch_code: batchCode,
       file_name: fileName || storagePath.split('/').pop(),
@@ -144,12 +159,24 @@ export async function POST(request: Request) {
       const { error: rowsError } = await supabase.from('excel_import_rows').insert(records);
       if (rowsError) throw rowsError;
     }
-    await supabase.from('audit_logs').insert({ actor_id: user.id, entity_type: 'excel_import_batch', entity_id: batch.id, action: 'excel_workbook_staged', after_data: { batch_code: batchCode, total_rows: normalized.length, valid_rows: validCount, rows_with_errors: errorCount, file_name: fileName } });
-    return NextResponse.json({ batchId: batch.id, batchCode, totalRows: normalized.length, validRows: validCount, rowsWithErrors: errorCount, sheets: parsed.sheetNames }, { status: 201 });
+    const { data: publishResult, error: publishError } = await supabase.rpc('publish_excel_import_batch', { p_batch_id: batch.id });
+    if (publishError) throw new Error(publishError.message || 'The workbook could not be published. No partial batch was committed.');
+    return NextResponse.json({
+      batchId: batch.id,
+      batchCode,
+      totalRows: normalized.length,
+      validRows: validCount,
+      rowsWithErrors: 0,
+      publishedCount: Number(publishResult?.publishedCount ?? normalized.length),
+      questionCodes: publishResult?.questionCodes ?? [],
+      published: true,
+      status: 'completed',
+      sheets: parsed.sheetNames,
+    }, { status: 201 });
   } catch (error) {
     if (batchId) {
       try {
-        const { supabase } = await adminContext(['super_admin','importer']);
+        const { supabase } = await adminContext(['super_admin']);
         await supabase.from('excel_import_batches').delete().eq('id', batchId);
       } catch { /* Preserve the original validation error. */ }
     }

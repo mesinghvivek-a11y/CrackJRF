@@ -190,54 +190,58 @@ export function normalizeQuestionRow(input: Record<string, unknown>, index: numb
   if (paperNumber === 2 && (!subjectCode || subjectCode === '00')) errors.push('Paper II requires its subject code, for example Geography 80.');
   if (!row.original_question_number) errors.push('Original question number is required.');
   const suppliedPaperOrder = text(row.paper_order);
-  const paperOrder = Number(suppliedPaperOrder || index + 1);
-  if (!suppliedPaperOrder) warnings.push(`Paper order was blank; imported worksheet order ${index + 1} was used. Confirm it matches the official paper.`);
+  const paperOrder = Number(suppliedPaperOrder);
+  if (!suppliedPaperOrder) errors.push('paper_order is required to preserve the official question sequence.');
   if (!Number.isInteger(paperOrder) || paperOrder < 1) errors.push('Paper order must be a positive whole number.');
   if (!row.question_english) errors.push('English question text is required.');
   const optionKeys = ['a','b','c','d'];
   const optionCount = optionKeys.filter((key) => Boolean(row[`option_${key}_english`])).length;
-  if (optionCount !== 4) errors.push('The current Question Bank editor requires all four English options (A–D). Complete all four before promoting this row.');
-const correct = (row.correct_option ?? '')
-  .toUpperCase()
-  .replace(/[;|]/g, ',')
-  .split(',')
-  .map((v: string) => v.trim())
-  .filter(Boolean);
+  if (optionCount !== 4) errors.push('All four English options (A–D) are required.');
 
-if (
-  correct.some((key: string) => !['A', 'B', 'C', 'D'].includes(key))
-) {
-  errors.push(
-    'Correct Option must contain A, B, C or D (multiple answers may be separated by commas).'
-  );
-}
+  const correct = String(row.correct_option ?? '')
+    .toUpperCase()
+    .replace(/[;|]/g, ',')
+    .split(',')
+    .map((value: string) => value.trim())
+    .filter(Boolean);
+  if (correct.length === 0) errors.push('Correct Option is required. The workbook is treated as pre-checked content.');
+  if (correct.some((key: string) => !['A','B','C','D'].includes(key))) {
+    errors.push('Correct Option must contain A, B, C or D (multiple answers may be separated by commas).');
+  }
+  if (correct.some((key: string) => !row[`option_${key.toLowerCase()}_english`])) {
+    errors.push('Correct Option refers to an option that has no English option text.');
+  }
+  const inputType = String(row.question_type || 'single_correct_mcq').toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (inputType === 'single_correct_mcq' && correct.length > 1) errors.push('This is marked single-correct but contains multiple correct options. Set the correct question type in Excel.');
+  if (inputType === 'multiple_correct_mcq' && correct.length < 2) errors.push('This is marked multiple-correct but has fewer than two correct options.');
 
-if (
-  correct.some(
-    (key: string) => !row[`option_${key.toLowerCase()}_english`]
-  )
-) {
-  errors.push(
-    'Correct Option refers to an option that has no English option text.'
-  );
-}  if (correct.length > 1 && row.question_type === 'single_correct_mcq') warnings.push('Multiple proposed answers are present for a single-correct question type.');
-  if (!row.answer_source_type && correct.length) warnings.push('An answer is supplied but answer_source_type is blank. Treat the claim as unverified.');
-  if (!row.unit_id || !row.section_id || !row.topic_id) warnings.push('Syllabus classification is incomplete. Assign or correct Unit, Section and Topic in Admin.');
-  if (row.subtopic && !row.subtopic_id) warnings.push('A sub-topic title is present without a stable subtopic_id. Select the sub-topic in Admin before promotion.');
-  if (row.qa_flag && row.qa_flag !== 'none') warnings.push(`Provider QA flag: ${row.qa_flag}${row.qa_note ? ` — ${row.qa_note}` : ''}`);
-  if (text(row.media_required).toLowerCase() === 'yes' && !text(row.media_description)) warnings.push('Media is required but no media description was supplied. Attach the source crop or diagram in Admin.');
+  if (!row.unit_id || !row.section_id || !row.topic_id) errors.push('Unit, Section and Topic IDs are required in the workbook.');
+  if (row.subtopic && !row.subtopic_id) errors.push('A sub-topic title is present without its stable subtopic_id.');
+  if (!row.answer_source_type || ['unknown_or_unavailable', 'ai_inferred'].includes(text(row.answer_source_type).toLowerCase())) errors.push('A supported answer_source_type is required; use an official key or institution_solution, not an inferred/unknown answer.');
+  const matchStatus = text(row.question_match_status).toLowerCase();
+  if (!['exact_match', 'probable_match'].includes(matchStatus)) errors.push('question_match_status must be exact_match or probable_match.');
+  const matchConfidence = text(row.match_confidence).toLowerCase();
+  if (!['high', 'medium'].includes(matchConfidence)) errors.push('match_confidence must be high or medium.');
+  const officialKeyStatus = text(row.official_key_status).toLowerCase();
+  if (!['revised_final', 'final', 'provisional', 'not_provided', 'unknown'].includes(officialKeyStatus)) errors.push('official_key_status must state revised_final, final, provisional, not_provided or unknown.');
+  const hindiStem = String(row.question_hindi_official ?? '').trim();
+  const hindiOptions = optionKeys.map((key) => String(row[`option_${key}_hindi_official`] ?? '').trim());
+  if (hindiStem && hindiOptions.some((value) => !value)) errors.push('Hindi question is supplied but all four Hindi options must also be supplied.');
+  if (!hindiStem && hindiOptions.some(Boolean)) errors.push('Hindi options are supplied without a Hindi question statement.');
+  if (text(row.qa_flag).toLowerCase() !== 'none') errors.push(`Workbook qa_flag must explicitly be none before trusted import: ${row.qa_flag || 'blank'}${row.qa_note ? ` — ${row.qa_note}` : ''}`);
+  if (text(row.media_required).toLowerCase() === 'yes' && !text(row.media_description)) warnings.push('Media is marked required but no media description was supplied; attach the image after import.');
+
   const questionTypeMap: Record<string,string> = {
     mcq:'mcq', single_correct:'mcq', single_correct_mcq:'mcq', multiple_correct:'mcq', multiple_correct_mcq:'mcq',
     assertion_reason:'mcq', match_the_following:'matrix', matching:'matrix', sequence_order:'matrix',
-    comprehension:'comprehension', table:'table', table_based:'table', image:'image', diagram:'image', map:'map', map_based:'map', numeric:'numeric', other:'other',
+    comprehension:'comprehension', passage_based:'comprehension', passage:'comprehension',
+    table:'table', table_based:'table', image:'image', diagram:'image', diagram_based:'image', map:'map', map_based:'map', numeric:'numeric', numerical:'numeric', other:'other',
   };
-  const inputType = (row.question_type || 'single_correct_mcq').toLowerCase().trim().replace(/[\s-]+/g, '_');
   const questionType = questionTypeMap[inputType] ?? 'other';
   row.paper = paperNumber === 1 ? 'I' : paperNumber === 2 ? 'II' : text(row.paper);
   row.subject_code = subjectCode;
   if (Number.isInteger(paperOrder) && paperOrder > 0) row.paper_order = String(paperOrder);
   row.original_question_number = text(row.original_question_number);
-  const statusAnswer = 'pending';
   return {
     row,
     paperNumber,
@@ -246,7 +250,7 @@ if (
     paperOrder,
     questionType,
     proposedAnswerKeys: correct,
-    answerStatus: statusAnswer,
+    answerStatus: correct.length > 1 ? 'multiple_correct' : 'single_correct',
     errors,
     warnings,
   };

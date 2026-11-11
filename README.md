@@ -5,12 +5,12 @@ Monorepo starter for a multi-subject UGC NET preparation product, with Geography
 ## What is included
 
 - `apps/student`: student-facing Next.js app (PYQ browsing, answer reveal, bookmarks, practice/full mock test flows, personal performance, static PYQ analytics and authentication).
-- `apps/admin`: separate private Next.js admin app (dashboard, vendor JSON Import Centre, package staging review, three-panel content review workspace, rich explanation editor, question bank, syllabus viewer, roles/settings).
+- `apps/admin`: separate private Next.js Admin app with one-step trusted Excel import, compact bilingual editor, collapsible syllabus taxonomy, question bank and publishing controls.
 - `packages/shared`: shared TypeScript models, test blueprints, demo data and expanded Geography/Paper I syllabus JSON.
 - `supabase/migrations`: PostgreSQL schema, row-level security, private storage buckets, controlled answer reveal RPC, admin roles and test data tables.
 - `scripts/seed-syllabus.ts`: seeds subjects, syllabus versions/nodes and initial test blueprints.
 
-The repository is an implementation foundation with Supabase-backed API paths where credentials are configured. It does not contain the real 2014–2026 question dataset, and the demo questions are synthetic. The approved ingestion boundary is vendor-delivered consolidated JSON: CrackJRF does not perform PDF OCR, segmentation or solved-paper matching. Imported records are structurally validated and remain private until content review, syllabus classification, answer verification and Super Admin approval. Dependency installation, a production build, SQL execution and end-to-end Supabase verification must be completed in your environment before launch.
+The repository is an implementation foundation with Supabase-backed API paths where credentials are configured. It does not contain the real 2014–2026 question dataset, and demo questions are synthetic. The approved content handoff is one provider-prepared Excel workbook per exam event/shift. A structurally valid trusted workbook is published as one atomic batch; questions remain fully editable afterwards. Admin editing has parallel English/Hindi content, a collapsible syllabus tree, and Save Draft / Publish actions. Hinglish and Gemini translation are not used. Dependency installation, production builds, SQL execution and end-to-end Supabase verification must be completed in your environment before launch.
 
 ## Requirements
 
@@ -53,7 +53,7 @@ SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY
 
 ### Apply the database migration
 
-Run `supabase/migrations/0001_initial_schema.sql` in the Supabase SQL Editor first. Then run `supabase/migrations/0002_json_import_packages.sql`. The second migration adds the private vendor-package staging tables, E/H language question codes, stable provider option IDs, language-specific explanation storage, the relevant RLS policies and ZIP support for the private `source-pdfs` bucket.
+Apply `supabase/migrations/0001_initial_schema.sql`, then `0002_json_import_packages.sql`, then `0003_excel_import_workflow.sql`, and finally `0004_trusted_excel_publish_and_fast_editor.sql`, in that order. Skip any migration that has already completed successfully. Migration 0004 adds atomic trusted-workbook publication, private editor drafts, paper-order preservation and an English/native + Hindi/native-only translation policy. It removes legacy Roman-script Hindi variants. Keep the existing private `source-pdfs` and `question-assets` buckets.
 
 Then seed the subject and syllabus rows:
 
@@ -106,23 +106,15 @@ Admin app: <http://localhost:3001>
 
 Without Supabase environment values, both apps open in clearly labelled local preview mode. Admin changes then remain local in the browser and uploads/publishing are not persisted.
 
-## 4. Vendor JSON package ingestion workflow
+## 4. Trusted Excel import workflow
 
-The provider delivers one ZIP package per examination paper, year, session, shift and re-examination event. The package is the consolidated result of the provider's PDF extraction, source matching and NTA-order preservation. CrackJRF does not run OCR, segment PDF pages or match solved-paper questions.
+The approved content handoff is one provider-prepared `.xlsx` workbook per examination event/shift. A single `Questions` sheet can contain Paper I and Paper II rows. The workbook includes `Exam Metadata`, question text and options, correct answer(s), optional official Hindi, explanations, stable syllabus IDs, keywords, answer-source details and paper order.
 
-The provider-facing standard and sample package are versioned in [`docs/vendor-import-standard-v1.0.0/`](docs/vendor-import-standard-v1.0.0/). The separate distribution bundle is `CrackJRF_Import_Contract_v1.0.zip`. The ZIP must contain:
+In Admin → Import & Publish, selecting the workbook starts upload, structural validation and publication automatically. CrackJRF rejects the complete workbook if required fields, metadata, answer keys, subject mappings, taxonomy paths, duplicate checks or provider QA flags fail. A valid workbook is published through one PostgreSQL transaction. There is no second answer-verification queue or reviewer/promotion stage.
 
-- `manifest.json`
-- `questions_common.json`
-- `questions_en.json` (mandatory) and `questions_hi.json` (optional)
-- `qa_report.json`, `checksums.sha256` and `assets/asset_manifest.json`
-- Original high-resolution question crops, maps, diagrams and tables under `assets/` when referenced
+The Admin can later edit every question field in a compact English/Hindi editor. Save Draft stores a private working copy without changing the live version; Publish writes all changes transactionally and updates the Student Portal after the database confirms success. Hindi can be imported from Excel or entered manually. Hinglish and Gemini translation are not supported.
 
-Apply migration `0002_json_import_packages.sql` before using this feature. In Admin → JSON Import Centre, choose the ZIP file. The browser uploads it directly to the private Supabase Storage bucket; the Admin API validates the archive and registers the metadata and question records in private staging. The API checks package structure and IDs, question sequence, E/H pairing, shared A/B/C/D option IDs, source references, QA counts, checksums and asset hashes. It does not inspect or process source PDFs.
-
-A successful structural validation is not an academic verification. Imported answers and explanations remain provider claims. CrackJRF must separately assign syllabus units, sections, topics, subtopics and keywords, review each language, verify answer evidence and approve publication. A package with a provider QA exception or unresolved match remains visibly flagged for manual review. Nothing is automatically published.
-
-The provider must not include internal database UUIDs or syllabus classification/keyword fields. For the complete identity, media and answer-evidence rules, follow the versioned import contract rather than inventing provider-specific fields.
+Download the current template from the Admin Import Centre or `public/templates/CrackJRF_Question_Import_Template_v3.xlsx`. Keep the worksheet names and column headers unchanged.
 
 ## 5. Question identity and content rules
 
@@ -130,12 +122,12 @@ The provider must not include internal database UUIDs or syllabus classification
 - Preserve NTA's question ID as optional source metadata, never as the primary key.
 - Preserve each exam appearance separately (year, June/December/other, re-exam/special, paper, date, shift and original question number).
 - English and Hindi are language variants of one canonical logical question, not separate question records. Preserve the external language-specific question codes ending in `E` and `H` on the language records.
-- Provider option IDs remain stable across language files and are mapped to platform-owned option UUIDs; A/B/C/D remain the visible option keys.
-- A question can map to multiple units/topics, but overall unique-question totals and test selection must deduplicate by canonical question ID.
+- A/B/C/D remain the visible option keys and platform-owned option UUIDs remain stable across edits.
+- Each imported question has one primary Unit → Section → Topic path and an optional Subtopic; use keywords for related concepts. Overall counts and test selection deduplicate by canonical question ID.
 - Shared passages, tables and stimuli use question groups so related sub-questions can point to the same stimulus.
-- Keep official and private source records separate. Preserve the provider's question-match provenance; a provider match is not answer verification and CrackJRF does not independently match solved-paper content.
-- An answer claim from a private source is not verified until reviewed. Keep disputed answer evidence and references.
-- Do not publish a question with a pending or disputed answer into a scored test. Handle dropped/multiple-correct questions with explicit grading rules.
+- Keep official question wording and answer-source provenance distinct in the workbook metadata and question rows.
+- Preserve source provenance for the answer supplied in the trusted workbook. An Admin may change the current answer and publish a new revision; previous answer evidence and revisions remain traceable.
+- The trusted workbook supplies the current answer key used by the platform. Admins can edit the answer and publish a new revision at any time.
 - Historical papers retain their actual question counts/patterns. New complete mock blueprints use 50 Paper I + 100 Paper II questions over 180 minutes. Geography-only 100-question/120-minute mode is a platform practice configuration, not an official separate Paper II time allotment.
 
 ## 6. Main routes
@@ -144,7 +136,7 @@ The provider must not include internal database UUIDs or syllabus classification
 
 - `/` – overview
 - `/pyq` – published question browsing, filters, answer reveal and bookmarks
-- `/tests` – Geography-only, full UGC NET and custom timed CBT; test attempts require enough verified, published questions
+- `/tests` – Geography-only, full UGC NET and custom timed CBT; test attempts require enough published questions with an answer key
 - `/analytics` – PYQ frequency and historical trend analysis from source appearances
 - `/performance` – personal performance derived from completed attempts
 - `/revision` – bookmarks and mistake notebook entry point
@@ -153,9 +145,9 @@ The provider must not include internal database UUIDs or syllabus classification
 ### Admin (`localhost:3001`)
 
 - `/` – admin dashboard
-- `/imports` – vendor ZIP upload, validation and import history
-- `/imports/[packageId]` – ordered question preview in private staging
-- `/review` – three-panel review/editor workspace with rich explanation editor
+- `/imports` – one-step trusted Excel upload, validation and batch publication
+- `/imports/excel/[batchId]` – completed Excel batch and published question list
+- `/review?questionCode=...` – compact English/Hindi question editor with Save Draft and Publish
 - `/questions` – question bank management shell
 - `/syllabus` – Geography and Paper I taxonomy viewer
 - `/settings` – roles/security guidance
@@ -167,20 +159,20 @@ The provider must not include internal database UUIDs or syllabus classification
 npm run validate:question -- examples/question-record.example.json
 ```
 
-This validates structural fields only. It does not verify source authenticity, taxonomy correctness, translations, or answer correctness.
+This validates structural fields only. It does not independently verify source authenticity, taxonomy meaning, translation quality or academic answer correctness. The trusted workbook workflow relies on the provider's pre-check and preserves answer/source provenance.
 
 ## 8. Important production work remaining
 
 Before real candidates use the platform:
 
-1. Complete canonical-question promotion from package staging, including safe retries, provenance links and language-specific external question codes.
-2. Verify question revision snapshots and approval actions with real Supabase accounts and RLS.
-3. Test the student CBT client against the server-authoritative `start_test_attempt`, response-save, `submit_test_attempt` and post-submit review RPCs. Never let the browser submit or read test answer keys.
-4. Test the student PYQ reveal interface against the `get_practice_answer` RPC and active-test access checks.
-5. Replace remaining demo data with reviewed, licensed content; validate student library and dashboard queries.
-6. Complete the bilingual content review and explanation workflow without overwriting independently edited Hindi.
-7. Add import correction/supersession tools, resilient batch recovery and a full audit trail for large vendor deliveries.
-8. Run security review, RLS tests, accessibility checks, load tests and production backups.
+1. Apply migrations 0001–0004 in order, skipping any migration already successfully applied.
+2. Run Admin and Student production builds in the target Codespaces environment.
+3. Test a small trusted workbook and confirm all questions publish together, with no partial batch on structural failure.
+4. Test Save Draft and Publish with a Super Admin account; confirm Save Draft leaves the published version unchanged and Publish updates it transactionally.
+5. Test the English/Hindi editor, syllabus tree, answer changes, explanations, source provenance and image attachments.
+6. Test the student CBT client against the server-authoritative `start_test_attempt`, response-save, `submit_test_attempt` and post-submit review RPCs. Never let the browser submit or read test answer keys.
+7. Test the student PYQ reveal interface against the `get_practice_answer` RPC and active-test access checks.
+8. Run RLS, role-permission, accessibility, reliability and load tests, and confirm production backups are available.
 
 This repository is a runnable foundation and first-pass interface, not a claim that the entire production product or the 2014–2026 dataset is already complete.
 

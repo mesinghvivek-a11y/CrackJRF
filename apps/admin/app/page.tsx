@@ -5,7 +5,6 @@ import {
   BookOpenCheck,
   FileSpreadsheet,
   Languages,
-  ListChecks,
   ShieldCheck,
   Tags,
 } from "lucide-react";
@@ -20,12 +19,12 @@ const actions = [
     action: "Open Excel Import Centre",
   },
   {
-    icon: ListChecks,
-    title: "Edit and verify question content",
+    icon: BookOpenCheck,
+    title: "Edit questions",
     description:
-      "Correct stems, options, answer evidence, language variants, explanations and source references.",
-    href: "/review",
-    action: "Open Review Workspace",
+      "Edit English and Hindi content, options, answers, classifications, explanations and media.",
+    href: "/questions",
+    action: "Open Question Bank",
   },
   {
     icon: Tags,
@@ -47,8 +46,8 @@ export default function AdminHome() {
           </div>
           <h1>Question Bank workspace</h1>
           <p>
-            One Excel workbook in; editable, reviewed and approved
-            questions out. Imported content is never published automatically.
+            One trusted Excel workbook in; all structurally valid questions publish together.
+            Every field remains editable afterwards.
           </p>
         </div>
 
@@ -74,15 +73,15 @@ export default function AdminHome() {
           },
           {
             icon: Languages,
-            value: "EN · HI · Hinglish",
+            value: "EN · HI",
             title: "Language variants",
-            foot: "Independent review before student display",
+            foot: "English and Hindi, edited side by side",
           },
           {
             icon: ShieldCheck,
             value: "Private",
             title: "Publication control",
-            foot: "Reviewer verification + Super Admin approval",
+            foot: "Import batch publish + direct editor publish",
           },
         ].map((item) => {
           const Icon = item.icon;
@@ -108,10 +107,10 @@ export default function AdminHome() {
       <div className="admin-grid">
         <section className="admin-panel">
           <div className="admin-panel-title">
-            Recommended next actions
+            Quick actions
           </div>
           <div className="admin-panel-sub">
-            Follow the same sequence for every examination event.
+            Import, edit and manage your published question bank.
           </div>
 
           {actions.map((item, index) => {
@@ -144,21 +143,20 @@ export default function AdminHome() {
 
         <aside className="admin-panel">
           <div className="admin-panel-title">
-            Editorial and publishing gates
+            Content workflow
           </div>
           <div className="admin-panel-sub">
-            These checks protect the Student Portal from unreviewed content.
+            A trusted workbook is published in one operation. You can edit and republish any question later.
           </div>
 
           {[
-            "Official question text and original order reconciled",
-            "All four English options present and reviewed",
-            "Unit, section and topic assigned",
-            "Provider answer evidence checked against its source",
-            "Answer verified by Reviewer or Super Admin",
-            "Hindi / Hinglish variants independently reviewed",
-            "Images, diagrams and explanations checked",
-            "Super Admin approves publication",
+            "One Excel workbook per exam event or shift",
+            "Paper I and Paper II can be imported together",
+            "English and Hindi remain independently editable",
+            "Answers are taken from the trusted workbook",
+            "Syllabus taxonomy is selected from the compact tree",
+            "Save Draft preserves the current live version",
+            "Publish sends the updated question to students",
           ].map((item, index) => (
             <div className="admin-row" key={item}>
               <div className="admin-row-icon">{index + 1}</div>
@@ -169,9 +167,7 @@ export default function AdminHome() {
           ))}
 
           <div className="admin-callout">
-            The vendor workbook is a content handoff, not an approval.
-            An imported answer remains unverified, and language variants
-            remain hidden until their own review checks pass.
+            The import is atomic: if a workbook has structural errors, no partial batch is published. A successful workbook publishes all questions together.
           </div>
         </aside>
       </div>

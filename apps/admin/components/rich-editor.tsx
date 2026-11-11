@@ -2,6 +2,7 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
+import { useEffect } from "react";
 import StarterKit from "@tiptap/starter-kit";
 
 import Underline from "@tiptap/extension-underline";
@@ -68,6 +69,14 @@ export function RichEditor({
       },
     },
   });
+
+  useEffect(() => {
+    if (!editor) return;
+    const current = editor.getHTML();
+    if ((content || "") !== current) {
+      editor.commands.setContent(content || "", { emitUpdate: false });
+    }
+  }, [editor, content]);
 
   if (!editor) {
     return (
