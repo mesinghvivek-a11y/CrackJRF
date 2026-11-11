@@ -1,3 +1,180 @@
+
 import Link from "next/link";
-import { FileJson2, ListChecks, BookOpenCheck, ShieldCheck, ArrowUpRight, FileClock, Tags } from "lucide-react";
-export default function AdminHome(){return <><div className="admin-page-heading"><div><div className="admin-eyebrow">Administration</div><h1>Content operations</h1><p>Manage vendor JSON packages, question quality and publication.</p></div><Link className="admin-button" href="/imports"><FileJson2 size={14}/>Import JSON package</Link></div><div className="admin-stat-grid">{[{n:"0",t:"Published questions",f:"Verified question bank",i:BookOpenCheck},{n:"0",t:"Pending review",f:"Awaiting content checks",i:ListChecks},{n:"0",t:"JSON packages",f:"Validated vendor deliveries",i:FileClock},{n:"1",t:"Administrators",f:"Single Super Admin setup",i:ShieldCheck}].map(x=>{const I=x.i;return <div className="admin-stat" key={x.t}><div className="admin-stat-icon"><I size={16}/></div><div className="admin-stat-label">{x.t}</div><div className="admin-stat-value">{x.n}</div><div className="admin-stat-foot">{x.f}</div></div>})}</div><div className="admin-grid"><section className="admin-panel"><div className="admin-panel-title">Recommended next actions</div><div className="admin-panel-sub">Start the content pipeline with one representative paper.</div>{[{i:FileJson2,t:"Upload a provider JSON package",d:"Validate the consolidated NTA question data and stage it for review.",href:"/imports"},{i:ListChecks,t:"Review staged questions",d:"Check wording, bilingual content, options and source provenance.",href:"/imports"},{i:Tags,t:"Check syllabus taxonomy",d:"Review the expanded Geography and Paper I classification.",href:"/syllabus"}].map(x=>{const I=x.i;return <div className="admin-row" key={x.t}><div className="admin-row-icon"><I size={16}/></div><div className="admin-row-main"><b>{x.t}</b><small>{x.d}</small></div><Link className="admin-button secondary" href={x.href}>Open <ArrowUpRight size={13}/></Link></div>})}</section><aside className="admin-panel"><div className="admin-panel-title">Publishing rules</div><div className="admin-panel-sub">Quality gates applied before student visibility.</div>{["Official source question wording checked","English/Hindi content reviewed when supplied","Four options validated for standard MCQ","Syllabus mapping approved","Answer status verified","Explanation and references reviewed","Super Admin publication approval"].map((t,i)=><div className="admin-row" key={t}><div className="admin-row-icon">{i+1}</div><div className="admin-row-main"><b>{t}</b></div></div>)}<div className="admin-callout">Questions remain in staging until the required checks are complete. A valid JSON package is not an academic or publication approval.</div></aside></div></>}
+import {
+  ArrowUpRight,
+  BookOpenCheck,
+  FileSpreadsheet,
+  Languages,
+  ListChecks,
+  ShieldCheck,
+  Tags,
+} from "lucide-react";
+
+const actions = [
+  {
+    icon: FileSpreadsheet,
+    title: "Import one Excel workbook",
+    description:
+      "Upload one exam-event workbook containing Paper I and Paper II, then inspect row-level validation.",
+    href: "/imports",
+    action: "Open Excel Import Centre",
+  },
+  {
+    icon: ListChecks,
+    title: "Edit and verify question content",
+    description:
+      "Correct stems, options, answer evidence, language variants, explanations and source references.",
+    href: "/review",
+    action: "Open Review Workspace",
+  },
+  {
+    icon: Tags,
+    title: "Assign the syllabus taxonomy",
+    description:
+      "Apply the appropriate Paper I or Geography hierarchy, add related topics and searchable keywords.",
+    href: "/syllabus",
+    action: "Open Syllabus Manager",
+  },
+];
+
+export default function AdminHome() {
+  return (
+    <>
+      <div className="admin-page-heading">
+        <div>
+          <div className="admin-eyebrow">
+            CrackJRF content operations
+          </div>
+          <h1>Question Bank workspace</h1>
+          <p>
+            One Excel workbook in; editable, reviewed and approved
+            questions out. Imported content is never published automatically.
+          </p>
+        </div>
+
+        <Link className="admin-button" href="/imports">
+          <FileSpreadsheet size={14} />
+          Import Excel workbook
+        </Link>
+      </div>
+
+      <div className="admin-stat-grid">
+        {[
+          {
+            icon: FileSpreadsheet,
+            value: "01",
+            title: "Excel workbook",
+            foot: "One file per exam event / shift",
+          },
+          {
+            icon: BookOpenCheck,
+            value: "I + II",
+            title: "Combined papers",
+            foot: "Paper I and Paper II in one Questions sheet",
+          },
+          {
+            icon: Languages,
+            value: "EN · HI · Hinglish",
+            title: "Language variants",
+            foot: "Independent review before student display",
+          },
+          {
+            icon: ShieldCheck,
+            value: "Private",
+            title: "Publication control",
+            foot: "Reviewer verification + Super Admin approval",
+          },
+        ].map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <div className="admin-stat" key={item.title}>
+              <div className="admin-stat-icon">
+                <Icon size={16} />
+              </div>
+              <div className="admin-stat-label">{item.title}</div>
+              <div
+                className="admin-stat-value"
+                style={{ fontSize: item.value.length > 8 ? 17 : 24 }}
+              >
+                {item.value}
+              </div>
+              <div className="admin-stat-foot">{item.foot}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="admin-grid">
+        <section className="admin-panel">
+          <div className="admin-panel-title">
+            Recommended next actions
+          </div>
+          <div className="admin-panel-sub">
+            Follow the same sequence for every examination event.
+          </div>
+
+          {actions.map((item, index) => {
+            const Icon = item.icon;
+
+            return (
+              <div className="admin-row" key={item.title}>
+                <div className="admin-row-icon">
+                  <Icon size={16} />
+                </div>
+
+                <div className="admin-row-main">
+                  <b>
+                    {index + 1}. {item.title}
+                  </b>
+                  <small>{item.description}</small>
+                </div>
+
+                <Link
+                  className="admin-button secondary"
+                  href={item.href}
+                >
+                  {item.action}
+                  <ArrowUpRight size={13} />
+                </Link>
+              </div>
+            );
+          })}
+        </section>
+
+        <aside className="admin-panel">
+          <div className="admin-panel-title">
+            Editorial and publishing gates
+          </div>
+          <div className="admin-panel-sub">
+            These checks protect the Student Portal from unreviewed content.
+          </div>
+
+          {[
+            "Official question text and original order reconciled",
+            "All four English options present and reviewed",
+            "Unit, section and topic assigned",
+            "Provider answer evidence checked against its source",
+            "Answer verified by Reviewer or Super Admin",
+            "Hindi / Hinglish variants independently reviewed",
+            "Images, diagrams and explanations checked",
+            "Super Admin approves publication",
+          ].map((item, index) => (
+            <div className="admin-row" key={item}>
+              <div className="admin-row-icon">{index + 1}</div>
+              <div className="admin-row-main">
+                <b>{item}</b>
+              </div>
+            </div>
+          ))}
+
+          <div className="admin-callout">
+            The vendor workbook is a content handoff, not an approval.
+            An imported answer remains unverified, and language variants
+            remain hidden until their own review checks pass.
+          </div>
+        </aside>
+      </div>
+    </>
+  );
+}
