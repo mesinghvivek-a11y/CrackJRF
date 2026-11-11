@@ -2,7 +2,7 @@ export type Language = "en" | "hi";
 export type QuestionType = "mcq" | "comprehension" | "table" | "image" | "map" | "matrix";
 export type QuestionStatus = "draft" | "needs_correction" | "content_verified" | "answer_pending" | "ready_for_approval" | "published" | "rejected";
 export type AnswerStatus = "pending" | "single_correct" | "multiple_correct" | "all_options_correct" | "dropped" | "disputed";
-export type ExamSession = "June" | "December" | "Other";
+export type ExamSession = "June" | "December" | "January" | "Other";
 
 export interface ContentBlock {
   type: "paragraph" | "table" | "image" | "math" | "list" | "html";

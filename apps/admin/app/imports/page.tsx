@@ -25,7 +25,7 @@ type ImportResult = {
   questionCodes: Array<{ questionCode: string; paperNumber: number; originalQuestionNumber: string }>;
 };
 
-const TEMPLATE_URL = '/templates/CrackJRF_Question_Import_Template_v3.xlsx';
+const TEMPLATE_URL = '/templates/CrackJRF_Question_Import_Template_v5.xlsx';
 
 export default function ImportsPage() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -117,8 +117,8 @@ export default function ImportsPage() {
       <div className="admin-page-heading">
         <div>
           <div className="admin-eyebrow">One workbook · one operation</div>
-          <h1>Import & Publish</h1>
-          <p>Upload your completed CrackJRF workbook. A structurally valid batch is added to the Question Bank and published together.</p>
+          <h1>Excel Import Centre</h1>
+          <p>Upload one completed workbook for an exam event or shift. Paper I and Paper II can be included together; all structurally valid rows publish atomically.</p>
         </div>
         <span className="admin-tag blue"><FileSpreadsheet size={12} style={{ marginRight: 5 }} /> XLSX · 25 MB max</span>
       </div>
@@ -147,12 +147,12 @@ export default function ImportsPage() {
             />
           </label>
           <a className="excel-template-link" href={TEMPLATE_URL} download>
-            <Download size={14} /> Download the correct Excel template v3
+            <Download size={14} /> Download the Excel template v5
           </a>
         </div>
         <div className="excel-import-policy">
           <CheckCircle2 size={16} />
-          <span><b>Trusted workbook workflow.</b> Your prepared Excel is the approved content source. CrackJRF checks file structure, required fields, answer keys and taxonomy references, but does not send questions through a second manual answer-verification queue.</span>
+          <span><b>Trusted workbook workflow.</b> English question and A–D options are required. Hindi question, Hindi options and Hindi explanation columns are optional; blank or partial Hindi never blocks English publication and can be completed later in Question Bank.</span>
         </div>
       </section>
 

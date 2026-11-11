@@ -226,8 +226,10 @@ export function normalizeQuestionRow(input: Record<string, unknown>, index: numb
   if (!['revised_final', 'final', 'provisional', 'not_provided', 'unknown'].includes(officialKeyStatus)) errors.push('official_key_status must state revised_final, final, provisional, not_provided or unknown.');
   const hindiStem = String(row.question_hindi_official ?? '').trim();
   const hindiOptions = optionKeys.map((key) => String(row[`option_${key}_hindi_official`] ?? '').trim());
-  if (hindiStem && hindiOptions.some((value) => !value)) errors.push('Hindi question is supplied but all four Hindi options must also be supplied.');
-  if (!hindiStem && hindiOptions.some(Boolean)) errors.push('Hindi options are supplied without a Hindi question statement.');
+  // Hindi is optional. Incomplete Hindi should never block an English-first import.
+  if ((hindiStem || hindiOptions.some(Boolean)) && (!hindiStem || hindiOptions.some((value) => !value))) {
+    warnings.push('Hindi is partially filled. The English question will import normally; complete the Hindi stem and options later in Question Bank.');
+  }
   if (text(row.qa_flag).toLowerCase() !== 'none') errors.push(`Workbook qa_flag must explicitly be none before trusted import: ${row.qa_flag || 'blank'}${row.qa_note ? ` — ${row.qa_note}` : ''}`);
   if (text(row.media_required).toLowerCase() === 'yes' && !text(row.media_description)) warnings.push('Media is marked required but no media description was supplied; attach the image after import.');
 

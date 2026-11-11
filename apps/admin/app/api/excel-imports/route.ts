@@ -78,7 +78,7 @@ export async function POST(request: Request) {
         throw new Error('Exam Metadata: enter exam_date as YYYY-MM-DD or use an Excel date cell.');
       }
     }
-    if (!['June','December','Other'].includes(session)) throw new Error('Exam Metadata: exam_session must be June, December or Other.');
+    if (!['June','December','January','Other'].includes(session)) throw new Error('Exam Metadata: exam_session must be June, December, January or Other.');
     const eventType = metadata.event_type || 'regular';
     if (!['regular','re_exam','special','unknown'].includes(eventType)) throw new Error('Exam Metadata: event_type must be regular, re_exam, special or unknown.');
     const normalized = parsed.questions.map((record, index) => {
